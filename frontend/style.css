@@ -1,6 +1,7 @@
 /* 
  * Hepeco Digital - Professional Website Styles
  * Enhanced with security features, modern design, and responsive layout
+ * Mobile Menu FIXED Version
  */
 
 /* Reset & Base Styles */
@@ -378,6 +379,10 @@ p {
     }
 }
 
+/* ============================================
+   MOBILE MENU FIXED SECTION
+   ============================================ */
+
 /* Navigation */
 .navbar {
     background: var(--white);
@@ -446,7 +451,7 @@ p {
     margin-left: 10px;
 }
 
-/* Enhanced Menu */
+/* Desktop Navigation Menu */
 .nav-menu {
     display: flex;
     gap: 20px;
@@ -523,7 +528,10 @@ p {
     opacity: 0.9;
 }
 
-/* Mobile Menu Toggle */
+/* ============================================
+   MOBILE MENU TOGGLE - FIXED
+   ============================================ */
+
 .menu-toggle {
     display: none;
     background: none;
@@ -565,6 +573,95 @@ p {
 .menu-toggle.active .menu-icon:nth-child(3) {
     transform: rotate(-45deg) translate(6px, -6px);
 }
+
+/* ============================================
+   MOBILE MENU RESPONSIVE STYLES - FIXED
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Show hamburger menu */
+    .menu-toggle {
+        display: flex;
+    }
+    
+    /* Hide desktop navigation menu initially */
+    .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: var(--white);
+        flex-direction: column;
+        padding: 0;
+        transition: height 0.3s ease, opacity 0.3s ease;
+        box-shadow: var(--shadow-lg);
+        z-index: 99;
+        overflow: hidden;
+        justify-content: flex-start;
+        align-items: stretch;
+        opacity: 0;
+        pointer-events: none;
+        gap: 0;
+    }
+    
+    /* Show mobile menu when active */
+    .nav-menu.active {
+        height: calc(100vh - 70px);
+        padding: 20px;
+        overflow-y: auto;
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    /* Style mobile menu links */
+    .nav-link {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        justify-content: flex-start;
+        border-radius: var(--radius);
+        margin-bottom: 10px;
+        width: 100%;
+        border: 1px solid var(--light-gray);
+        text-align: left;
+    }
+    
+    .nav-link:hover {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+    }
+    
+    .nav-link.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+    }
+    
+    .nav-link i {
+        width: 24px;
+        text-align: center;
+    }
+    
+    /* Hide call button on mobile */
+    .nav-actions {
+        display: none;
+    }
+    
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
+    }
+    
+    /* Adjust security tag on mobile */
+    .security-tag {
+        display: none;
+    }
+}
+
+/* ============================================
+   END MOBILE MENU FIX
+   ============================================ */
 
 /* Hero Section */
 .hero {
@@ -2578,362 +2675,90 @@ input.invalid {
     }
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 1200px) {
-    .container {
-        max-width: 100%;
-        padding: 0 30px;
-    }
-}
-
-@media (max-width: 992px) {
-    .hero .container,
-    .payment-wrapper {
+/* Additional Responsive Fixes */
+@media (max-width: 768px) {
+    .hero .container {
         grid-template-columns: 1fr;
+        text-align: center;
         gap: 40px;
     }
     
     .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .section-title {
         font-size: 2rem;
-    }
-    
-    .mockup-content {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .nav-menu {
-        gap: 15px;
-    }
-    
-    .nav-link {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-    
-    h1 {
-        font-size: 2.5rem;
-    }
-    
-    h2 {
-        font-size: 2rem;
-    }
-    
-    h3 {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    /* Mobile Menu */
-    .menu-toggle {
-        display: flex;
-    }
-    
-    .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        height: 0;
-        background: var(--white);
-        flex-direction: column;
-        padding: 0;
-        transition: height 0.3s var(--transition);
-        box-shadow: var(--shadow-lg);
-        z-index: 99;
-        overflow: hidden;
-        justify-content: flex-start;
-        align-items: stretch;
-    }
-    
-    .nav-menu.active {
-        height: calc(100vh - 70px);
-        padding: 20px;
-        overflow-y: auto;
-    }
-    
-    .nav-link {
-        padding: 15px;
-        font-size: 1rem;
-        justify-content: flex-start;
-        border-radius: var(--radius);
-        margin-bottom: 5px;
-    }
-    
-    .nav-actions {
-        display: none;
-    }
-    
-    .hero-title {
-        font-size: 2rem;
-        text-align: center;
     }
     
     .hero-subtitle {
-        text-align: center;
         max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .hero-cta {
         justify-content: center;
-    }
-    
-    .form-actions,
-    .payment-actions,
-    .quote-actions,
-    .access-form,
-    .invoice-actions {
-        flex-direction: column;
-    }
-    
-    .access-form input,
-    .form-actions button,
-    .payment-actions button,
-    .quote-actions button,
-    .invoice-actions button {
-        width: 100%;
-    }
-    
-    .footer-bottom {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-    
-    .whatsapp-text {
-        display: none;
-    }
-    
-    .confirmation-message,
-    .quote-notification,
-    .payment-notification {
-        left: 20px;
-        right: 20px;
-        max-width: none;
-        bottom: 20px;
-        top: auto;
-    }
-    
-    .confirmation-message {
-        top: 20px;
-        bottom: auto;
     }
     
     .trust-badges {
         justify-content: center;
     }
     
-    .trust-badges .badge {
-        min-width: 120px;
-        flex: 0 1 calc(50% - 10px);
+    .badge {
+        min-width: 140px;
     }
     
-    .mockup-content {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .stat {
-        padding: 20px;
-    }
-    
-    .stat-number {
-        font-size: 2rem;
-    }
-    
-    .portal-features {
+    .payment-wrapper {
         grid-template-columns: 1fr;
     }
     
-    .modal-content {
-        width: 95%;
-        margin: 0;
+    .form-actions, .payment-actions, .quote-actions, .invoice-actions {
+        flex-direction: column;
     }
     
-    .whatsapp-float {
-        bottom: 15px;
-        right: 15px;
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .whatsapp-text {
+        display: none;
     }
     
     .whatsapp-btn {
         padding: 10px 15px;
     }
     
-    .security-badge {
-        top: 5px;
-        right: 5px;
-        font-size: 10px;
-        padding: 4px 8px;
-    }
-    
-    .container {
-        padding: 0 20px;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.75rem;
-    }
-    
-    .section-title {
-        font-size: 1.75rem;
+    .whatsapp-btn i {
+        margin: 0;
     }
 }
 
 @media (max-width: 576px) {
-    .hero-title {
-        font-size: 1.8rem;
-    }
-    
-    .section-title {
-        font-size: 1.7rem;
-    }
-    
-    .btn-primary, .btn-secondary {
-        padding: 12px 20px;
-        font-size: 0.95rem;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .hero-cta {
-        flex-direction: column;
-    }
-    
-    .trust-badges .badge {
-        flex: 0 1 100%;
-        min-width: 100%;
-    }
-    
-    .services-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .payment-wrapper {
-        gap: 20px;
-    }
-    
-    .payment-option {
-        flex-wrap: wrap;
-    }
-    
-    .payment-info {
-        flex-basis: calc(100% - 70px);
-    }
-    
-    .security-warning {
-        font-size: 0.9rem;
-        padding: 10px;
-    }
-    
-    .verified-call span {
-        font-size: 0.9rem;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .payment-icons {
-        justify-content: center;
-    }
-    
-    .whatsapp-btn i {
-        font-size: 20px;
-    }
-    
-    .modal-header {
-        padding: 15px 20px;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .payment-details p {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-    
-    h1 {
-        font-size: 1.8rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 375px) {
-    .hero-title {
-        font-size: 1.6rem;
-    }
-    
-    .section-title {
-        font-size: 1.4rem;
-    }
-    
-    .logo {
-        font-size: 1.3rem;
-    }
-    
-    .logo-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
-    }
-    
-    .security-tag {
-        display: none;
-    }
-    
-    .stat-number {
-        font-size: 1.5rem;
-    }
-    
-    .stat-label {
-        font-size: 0.75rem;
-    }
-    
     .container {
         padding: 0 15px;
     }
     
-    .service-card {
-        padding: 20px;
-    }
-    
-    .quote-box, .payment-methods {
-        padding: 20px;
-    }
-    
     h1 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
     }
     
     h2 {
-        font-size: 1.4rem;
+        font-size: 1.6rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .trust-badges .badge {
+        min-width: 100%;
+        flex: 1;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -2957,6 +2782,10 @@ input.invalid {
     .close-modal {
         width: 44px;
         height: 44px;
+    }
+    
+    .nav-link {
+        padding: 16px 20px;
     }
 }
 
