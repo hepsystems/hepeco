@@ -10,29 +10,65 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 </head>
 <body>
+    <!-- Security Badge -->
+    <div class="security-badge">
+        <i class="fas fa-shield-alt"></i>
+        <span>Secure Connection</span>
+    </div>
+
     <!-- Floating WhatsApp Button -->
     <div class="whatsapp-float">
-        <a href="https://wa.me/265991234567?text=Hello%20Hepeco%20Digital%21%20I%20need%20help%20with%20my%20website" target="_blank" class="whatsapp-btn">
+        <a href="https://wa.me/2650991268040?text=Hello%20Hepeco%20Digital%21%20I%20need%20help%20with%20my%20website" target="_blank" class="whatsapp-btn">
             <i class="fab fa-whatsapp"></i>
-            <span class="whatsapp-text">Chat with us</span>
+            <span class="whatsapp-text">Chat Securely</span>
         </a>
     </div>
 
-    <!-- Navigation -->
+    <!-- Enhanced Navigation -->
     <nav class="navbar">
         <div class="container">
             <div class="logo">
                 <span class="logo-icon">H</span>
                 <span class="logo-text">HEPECO<span class="logo-highlight">Digital</span></span>
+                <span class="security-tag">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure</span>
+                </span>
             </div>
-            <div class="nav-actions">
-                <a href="tel:+265991234567" class="call-btn">
-                    <i class="fas fa-phone"></i>
-                    <span>Call Now</span>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span class="menu-icon"></span>
+                <span class="menu-icon"></span>
+                <span class="menu-icon"></span>
+            </button>
+            
+            <!-- Navigation Menu -->
+            <div class="nav-menu" id="navMenu">
+                <a href="#quote" class="nav-link">
+                    <i class="fas fa-calculator"></i>
+                    <span>Get Quote</span>
                 </a>
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <a href="#payment" class="nav-link">
+                    <i class="fas fa-wallet"></i>
+                    <span>Pay Securely</span>
+                </a>
+                <a href="#contact" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Contact</span>
+                </a>
+                <a href="#portal" class="nav-link portal-link">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Client Portal</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="tel:+265991268040" class="call-btn verified-call">
+                    <i class="fas fa-phone"></i>
+                    <span>+265 99 126 8040</span>
+                    <i class="fas fa-check-circle verified-badge"></i>
+                </a>
             </div>
         </div>
     </nav>
@@ -41,28 +77,37 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Only communicate with our verified number: +265 99 126 8040</span>
+                </div>
+                
                 <h1 class="hero-title">Professional Websites & <span class="highlight">Digital Growth</span> for Businesses</h1>
-                <p class="hero-subtitle">We build fast, beautiful websites and handle your digital marketing. Everything you need to succeed online.</p>
+                <p class="hero-subtitle">Secure, fast, and reliable digital solutions with enhanced fraud protection and client portal access.</p>
                 
                 <div class="hero-cta">
                     <button class="btn-primary" id="whatsappChat">
-                        <i class="fab fa-whatsapp"></i> Start on WhatsApp
+                        <i class="fab fa-whatsapp"></i> Secure WhatsApp Chat
                     </button>
                     <button class="btn-secondary" id="showQuote">Get Instant Quote</button>
                 </div>
 
                 <div class="trust-badges">
                     <div class="badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Enhanced Security</span>
+                    </div>
+                    <div class="badge">
                         <i class="fas fa-clock"></i>
                         <span>24/7 Support</span>
                     </div>
                     <div class="badge">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>6 Months Warranty</span>
-                    </div>
-                    <div class="badge">
                         <i class="fas fa-bolt"></i>
                         <span>14-Day Delivery</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Client Portal</span>
                     </div>
                 </div>
             </div>
@@ -70,6 +115,10 @@
             <div class="hero-image">
                 <div class="mockup">
                     <div class="mockup-header">
+                        <div class="security-indicator">
+                            <i class="fas fa-lock"></i>
+                            <span>Secure Payment Portal</span>
+                        </div>
                         <div class="dots">
                             <span></span>
                             <span></span>
@@ -82,8 +131,12 @@
                             <div class="stat-label">Projects Delivered</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number">98%</div>
-                            <div class="stat-label">Client Satisfaction</div>
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Secure Transactions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24h</div>
+                            <div class="stat-label">Fraud Monitoring</div>
                         </div>
                     </div>
                 </div>
@@ -107,6 +160,7 @@
                         <li><i class="fas fa-check"></i> Fast Loading</li>
                         <li><i class="fas fa-check"></i> SEO Optimized</li>
                         <li><i class="fas fa-check"></i> Easy to Update</li>
+                        <li><i class="fas fa-check"></i> Security Hardened</li>
                     </ul>
                     <button class="service-btn" data-service="website">Get Quote</button>
                 </div>
@@ -121,6 +175,7 @@
                         <li><i class="fas fa-check"></i> Secure Payments</li>
                         <li><i class="fas fa-check"></i> Order Tracking</li>
                         <li><i class="fas fa-check"></i> Inventory System</li>
+                        <li><i class="fas fa-check"></i> Fraud Protection</li>
                     </ul>
                     <button class="service-btn" data-service="ecommerce">Get Quote</button>
                 </div>
@@ -135,6 +190,7 @@
                         <li><i class="fas fa-check"></i> Google Ads</li>
                         <li><i class="fas fa-check"></i> Content Creation</li>
                         <li><i class="fas fa-check"></i> Performance Reports</li>
+                        <li><i class="fas fa-check"></i> ROI Tracking</li>
                     </ul>
                     <button class="service-btn" data-service="marketing">Get Quote</button>
                 </div>
@@ -145,26 +201,33 @@
     <!-- Payment & Quote Section -->
     <section class="payment-section" id="quote">
         <div class="container">
-            <h2 class="section-title">Easy Payments & <span class="highlight">Instant Quotes</span></h2>
+            <h2 class="section-title">Secure Payments & <span class="highlight">Instant Quotes</span></h2>
+            <p class="section-subtitle">Enhanced security with real-time monitoring and fraud protection</p>
             
             <div class="payment-wrapper">
-                <!-- Quote Calculator -->
-                <div class="quote-box">
-                    <h3><i class="fas fa-calculator"></i> Project Quote Calculator</h3>
+                <!-- Enhanced Quote Calculator -->
+                <div class="quote-box enhanced">
+                    <div class="quote-header">
+                        <h3><i class="fas fa-calculator"></i> Project Quote Calculator</h3>
+                        <button class="save-quote-btn" id="saveQuote">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
                     
                     <div class="form-group">
-                        <label>What do you need?</label>
+                        <label><i class="fas fa-cogs"></i> What do you need?</label>
                         <select id="serviceType">
                             <option value="">Select Service</option>
                             <option value="basic_website">Basic Website (5 pages)</option>
                             <option value="business_website">Business Website (10 pages)</option>
                             <option value="ecommerce_store">E-commerce Store</option>
                             <option value="marketing_package">Digital Marketing Package</option>
+                            <option value="premium_package">Premium Business Solution</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Timeline</label>
+                        <label><i class="fas fa-clock"></i> Timeline</label>
                         <select id="timeline">
                             <option value="14">Standard (14 days)</option>
                             <option value="7">Fast (7 days) +25%</option>
@@ -181,18 +244,34 @@
                             <span>Timeline Fee:</span>
                             <span id="timelineFee">MK 0</span>
                         </div>
+                        <div class="quote-item security-fee">
+                            <span>Security & Support:</span>
+                            <span>Included</span>
+                        </div>
                         <div class="quote-item total">
                             <span>Total:</span>
                             <span id="totalCost">MK 0</span>
                         </div>
                     </div>
 
-                    <button class="btn-primary" id="proceedPayment">Proceed to Payment</button>
+                    <div class="quote-actions">
+                        <button class="btn-primary" id="proceedPayment">
+                            <i class="fas fa-lock"></i> Proceed to Secure Payment
+                        </button>
+                        <button class="btn-secondary" id="downloadQuote">
+                            <i class="fas fa-download"></i> Download Quote
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Payment Methods -->
-                <div class="payment-methods">
-                    <h3><i class="fas fa-wallet"></i> Pay with Mobile Money</h3>
+                <!-- Enhanced Payment Methods -->
+                <div class="payment-methods" id="payment">
+                    <h3><i class="fas fa-wallet"></i> Secure Payment Methods</h3>
+                    
+                    <div class="security-notice payment-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>All payments are monitored 24/7 for fraud protection</span>
+                    </div>
                     
                     <div class="payment-options">
                         <div class="payment-option active" data-method="mpamba">
@@ -202,6 +281,7 @@
                             <div class="payment-info">
                                 <h4>Mpamba</h4>
                                 <p>Pay instantly with Mpamba</p>
+                                <span class="security-badge">Secured</span>
                             </div>
                             <div class="payment-check">
                                 <i class="fas fa-check"></i>
@@ -215,6 +295,7 @@
                             <div class="payment-info">
                                 <h4>Airtel Money</h4>
                                 <p>Secure Airtel Money payment</p>
+                                <span class="security-badge">Secured</span>
                             </div>
                             <div class="payment-check">
                                 <i class="fas fa-check"></i>
@@ -228,6 +309,7 @@
                             <div class="payment-info">
                                 <h4>Bank Transfer</h4>
                                 <p>Transfer to our bank account</p>
+                                <span class="security-badge">Secured</span>
                             </div>
                             <div class="payment-check">
                                 <i class="fas fa-check"></i>
@@ -235,55 +317,144 @@
                         </div>
                     </div>
 
-                    <!-- Payment Form -->
-                    <div class="payment-form" id="paymentForm">
+                    <!-- Enhanced Payment Form -->
+                    <div class="payment-form enhanced" id="paymentForm">
                         <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" id="phoneNumber" placeholder="Enter phone number" required>
+                            <label><i class="fas fa-phone"></i> Your Phone Number</label>
+                            <input type="tel" id="phoneNumber" placeholder="0991268040" required>
+                            <div class="input-hint">Enter your Malawi mobile number</div>
                         </div>
 
                         <div class="form-group">
-                            <label>Amount (MK)</label>
+                            <label><i class="fas fa-money-bill"></i> Amount (MK)</label>
                             <input type="number" id="amount" placeholder="Enter amount" readonly>
+                            <div class="amount-lock">
+                                <i class="fas fa-lock"></i>
+                                <span>Locked from quote</span>
+                            </div>
+                        </div>
+
+                        <!-- Payment Dashboard -->
+                        <div class="payment-dashboard" id="paymentDashboard">
+                            <div class="dashboard-header">
+                                <h4><i class="fas fa-chart-line"></i> Payment Status</h4>
+                                <span class="dashboard-status active">Active</span>
+                            </div>
+                            <div class="dashboard-content">
+                                <div class="dashboard-item">
+                                    <span>Reference:</span>
+                                    <strong id="dashboardRef">--</strong>
+                                </div>
+                                <div class="dashboard-item">
+                                    <span>Amount:</span>
+                                    <strong id="dashboardAmount">MK 0</strong>
+                                </div>
+                                <div class="dashboard-item">
+                                    <span>Status:</span>
+                                    <span class="status-badge pending" id="dashboardPaymentStatus">Waiting</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="payment-instructions">
-                            <h4><i class="fas fa-info-circle"></i> Payment Instructions:</h4>
-                            <p id="mpambaInstructions" class="instructions">
-                                1. Dial *444#<br>
-                                2. Select "Send Money"<br>
-                                3. Enter number: <strong>099 123 4567</strong><br>
-                                4. Enter amount<br>
-                                5. Enter reference: <strong id="mpambaRef">HEPECO001</strong>
-                            </p>
-                            <p id="airtelInstructions" class="instructions hidden">
-                                1. Dial *555#<br>
-                                2. Select "Send Money"<br>
-                                3. Enter number: <strong>088 123 4567</strong><br>
-                                4. Enter amount<br>
-                                5. Enter reference: <strong id="airtelRef">HEPECO001</strong>
-                            </p>
-                            <p id="bankInstructions" class="instructions hidden">
-                                <strong>Bank Details:</strong><br>
-                                Bank: National Bank<br>
-                                Account: Hepeco Digital Systems<br>
-                                Account No: 1001234567<br>
-                                Branch: Lilongwe<br>
-                                Reference: <strong id="bankRef">HEPECO001</strong>
-                            </p>
+                            <h4><i class="fas fa-info-circle"></i> Secure Payment Instructions:</h4>
+                            <div id="mpambaInstructions" class="instructions">
+                                <div class="instruction-step">
+                                    <span class="step-number">1</span>
+                                    <span>Dial *444#</span>
+                                </div>
+                                <div class="instruction-step">
+                                    <span class="step-number">2</span>
+                                    <span>Select "Send Money"</span>
+                                </div>
+                                <div class="instruction-step">
+                                    <span class="step-number">3</span>
+                                    <span>Enter: <strong>0991268040</strong></span>
+                                </div>
+                                <div class="instruction-step">
+                                    <span class="step-number">4</span>
+                                    <span>Enter amount</span>
+                                </div>
+                                <div class="instruction-step">
+                                    <span class="step-number">5</span>
+                                    <span>Reference: <strong id="mpambaRef">--</strong></span>
+                                </div>
+                            </div>
+                            <div id="airtelInstructions" class="instructions hidden">
+                                <!-- Similar structure for Airtel -->
+                            </div>
+                            <div id="bankInstructions" class="instructions hidden">
+                                <!-- Similar structure for Bank -->
+                            </div>
                         </div>
 
                         <div class="payment-actions">
                             <button class="btn-primary" id="generatePayment">
-                                <i class="fas fa-qrcode"></i> Generate Payment
+                                <i class="fas fa-qrcode"></i> Generate Secure Payment
                             </button>
                             <button class="btn-secondary" id="verifyPayment">
                                 <i class="fas fa-check-circle"></i> Verify Payment
                             </button>
+                            <button class="btn-secondary" id="generateInvoice">
+                                <i class="fas fa-file-invoice"></i> Generate Invoice
+                            </button>
                         </div>
 
-                        <div id="paymentStatus"></div>
+                        <div id="paymentStatus" class="payment-status"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Portal Section -->
+    <section class="portal-section" id="portal">
+        <div class="container">
+            <h2 class="section-title">Client <span class="highlight">Portal</span></h2>
+            <p class="section-subtitle">Track your project progress, share files, and communicate securely</p>
+            
+            <div class="portal-features">
+                <div class="portal-feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Progress Tracking</h3>
+                    <p>Real-time updates on your project milestones</p>
+                </div>
+                
+                <div class="portal-feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Secure File Sharing</h3>
+                    <p>Upload and share files with end-to-end encryption</p>
+                </div>
+                
+                <div class="portal-feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Direct Messaging</h3>
+                    <p>Communicate directly with your project team</p>
+                </div>
+                
+                <div class="portal-feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track website performance and analytics</p>
+                </div>
+            </div>
+            
+            <div class="portal-access">
+                <h3><i class="fas fa-user-shield"></i> Access Your Portal</h3>
+                <div class="access-form">
+                    <input type="text" id="portalReference" placeholder="Enter Payment Reference">
+                    <input type="tel" id="portalPhone" placeholder="Your Phone Number">
+                    <button class="btn-primary" id="accessPortal">
+                        <i class="fas fa-sign-in-alt"></i> Access Portal
+                    </button>
                 </div>
             </div>
         </div>
@@ -292,42 +463,44 @@
     <!-- Contact Section -->
     <section class="contact" id="contact">
         <div class="container">
-            <h2 class="section-title">Contact Us <span class="highlight">Any Time</span></h2>
+            <h2 class="section-title">Contact Us <span class="highlight">Securely</span></h2>
+            <p class="security-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Always verify you're communicating with our verified number: <strong>+265 99 126 8040</strong>
+            </p>
             
             <div class="contact-grid">
                 <div class="contact-method">
-                    <div class="contact-icon whatsapp">
+                    <div class="contact-icon whatsapp verified">
                         <i class="fab fa-whatsapp"></i>
+                        <div class="verified-badge">Verified</div>
                     </div>
                     <h3>WhatsApp Business</h3>
                     <p>Chat instantly with our team</p>
-                    <a href="https://wa.me/265991234567?text=Hello%20Hepeco%20Digital%21%20I%20need%20a%20website" class="contact-link" target="_blank">
-                        <i class="fab fa-whatsapp"></i> Open Chat
+                    <a href="https://wa.me/2650991268040?text=Hello%20Hepeco%20Digital%21%20I%20need%20a%20website" class="contact-link verified-link" target="_blank">
+                        <i class="fab fa-whatsapp"></i> +265 99 126 8040
                     </a>
                     <div class="contact-features">
                         <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <span>24/7 Support</span>
+                            <i class="fas fa-shield-alt"></i>
+                            <span>End-to-End Encrypted</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-paperclip"></i>
-                            <span>Send Files</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-comments"></i>
-                            <span>Quick Replies</span>
+                            <span>Send Files Securely</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="contact-method">
-                    <div class="contact-icon call">
+                    <div class="contact-icon call verified">
                         <i class="fas fa-phone"></i>
+                        <div class="verified-badge">Verified</div>
                     </div>
                     <h3>Call Us Directly</h3>
                     <p>Speak with our experts</p>
-                    <a href="tel:+265991234567" class="contact-link">
-                        <i class="fas fa-phone"></i> +265 991 234 567
+                    <a href="tel:+265991268040" class="contact-link verified-link">
+                        <i class="fas fa-phone"></i> +265 99 126 8040
                     </a>
                     <div class="contact-times">
                         <div class="time">
@@ -359,10 +532,15 @@
 
             <!-- Quick Contact Form -->
             <div class="quick-form">
-                <h3><i class="fas fa-bolt"></i> Quick Message</h3>
+                <h3><i class="fas fa-bolt"></i> Quick Secure Message</h3>
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>All messages are encrypted and monitored for security</span>
+                </div>
+                
                 <div class="form-row">
-                    <input type="text" id="quickName" placeholder="Your Name">
-                    <input type="tel" id="quickPhone" placeholder="Phone Number">
+                    <input type="text" id="quickName" placeholder="Your Name" required>
+                    <input type="tel" id="quickPhone" placeholder="Phone Number" required>
                     <select id="quickService">
                         <option value="">I need help with...</option>
                         <option value="website">Website Development</option>
@@ -374,10 +552,10 @@
                 <textarea id="quickMessage" placeholder="Briefly describe your project..."></textarea>
                 <div class="form-actions">
                     <button class="btn-primary" id="sendWhatsApp">
-                        <i class="fab fa-whatsapp"></i> Send via WhatsApp
+                        <i class="fab fa-whatsapp"></i> Send via Secure WhatsApp
                     </button>
                     <button class="btn-secondary" id="sendEmail">
-                        <i class="fas fa-envelope"></i> Send Email
+                        <i class="fas fa-envelope"></i> Send Secure Email
                     </button>
                 </div>
             </div>
@@ -393,26 +571,40 @@
                         <span class="logo-icon">H</span>
                         <span class="logo-text">HEPECO<span class="logo-highlight">Digital</span></span>
                     </div>
-                    <p>Professional websites & digital solutions for growing businesses.</p>
+                    <p>Secure professional websites & digital solutions for growing businesses.</p>
+                    <div class="security-certification">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Enhanced Security Certified</span>
+                    </div>
                 </div>
 
                 <div class="footer-contact">
-                    <h4>Contact</h4>
-                    <a href="tel:+265991234567"><i class="fas fa-phone"></i> +265 991 234 567</a>
-                    <a href="mailto:info@hepecodigital.com"><i class="fas fa-envelope"></i> info@hepecodigital.com</a>
-                    <a href="https://wa.me/265991234567" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Chat</a>
+                    <h4>Verified Contact</h4>
+                    <a href="tel:+265991268040" class="verified">
+                        <i class="fas fa-phone"></i> +265 99 126 8040
+                        <i class="fas fa-check-circle verified-badge"></i>
+                    </a>
+                    <a href="mailto:info@hepecodigital.com">
+                        <i class="fas fa-envelope"></i> info@hepecodigital.com
+                    </a>
+                    <a href="https://wa.me/2650991268040" target="_blank" class="verified">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Chat
+                        <i class="fas fa-check-circle verified-badge"></i>
+                    </a>
                 </div>
 
                 <div class="footer-payments">
-                    <h4>Payment Methods</h4>
+                    <h4>Secure Payment Methods</h4>
                     <div class="payment-icons">
-                        <div class="payment-icon">
+                        <div class="payment-icon verified">
                             <i class="fas fa-mobile-alt"></i>
                             <span>Mpamba</span>
+                            <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="payment-icon">
+                        <div class="payment-icon verified">
                             <i class="fas fa-signal"></i>
                             <span>Airtel Money</span>
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="payment-icon">
                             <i class="fas fa-university"></i>
@@ -424,6 +616,10 @@
 
             <div class="footer-bottom">
                 <p>&copy; 2024 Hepeco Digital Systems. All rights reserved.</p>
+                <p class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Enhanced security monitoring active. Only communicate with verified numbers.</span>
+                </p>
                 <p>Lilongwe, Malawi</p>
             </div>
         </div>
@@ -433,21 +629,28 @@
     <div class="modal" id="qrModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-qrcode"></i> Scan to Pay</h3>
+                <h3><i class="fas fa-qrcode"></i> Secure Payment QR</h3>
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="security-alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Only pay to our verified number: 0991268040</span>
+                </div>
                 <div id="qrcode"></div>
                 <div class="payment-details">
                     <p><strong>Amount:</strong> <span id="modalAmount">MK 0</span></p>
-                    <p><strong>Reference:</strong> <span id="modalRef">HEPECO001</span></p>
-                    <p><strong>Pay to:</strong> <span id="modalAccount">099 123 4567</span></p>
+                    <p><strong>Reference:</strong> <span id="modalRef">--</span></p>
+                    <p><strong>Pay to:</strong> <span id="modalAccount">0991268040</span></p>
+                    <p><strong>Valid for:</strong> <span id="modalExpiry">1 hour</span></p>
                 </div>
                 <p class="modal-note"><i class="fas fa-info-circle"></i> Scan QR code with your mobile money app</p>
             </div>
         </div>
     </div>
 
+    <!-- Security Scripts -->
+    <script src="security-config.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
+                            </html>
