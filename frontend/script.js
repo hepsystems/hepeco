@@ -1,6 +1,7 @@
 /**
  * Hepeco Digital - Professional Website Solution
  * Enhanced with security, payment processing, and WhatsApp integration
+ * Mobile Menu FIXED Version
  */
 
 // WhatsApp Integration - Optimized
@@ -8,15 +9,19 @@ class WhatsAppManager {
     constructor() {
         this.verifiedNumber = '2650991268040';
         this.companyName = 'Hepeco Digital';
+        console.log('WhatsAppManager initialized');
         this.setupEssentialButtons();
     }
     
     setupEssentialButtons() {
+        console.log('Setting up WhatsApp buttons...');
+        
         // Primary WhatsApp chat button
         const whatsappChatBtn = document.getElementById('whatsappChat');
         if (whatsappChatBtn) {
             whatsappChatBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log('WhatsApp chat button clicked');
                 this.openSecureChat("Hello Hepeco Digital! I'm interested in your services.");
             });
         }
@@ -25,23 +30,30 @@ class WhatsAppManager {
         const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
         if (sendWhatsAppBtn) {
             sendWhatsAppBtn.addEventListener('click', () => {
+                console.log('Send WhatsApp button clicked');
                 this.sendQuickInquiry();
             });
         }
         
         // Service buttons - simplified
-        document.querySelectorAll('.service-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const service = e.target.dataset.service;
-                const serviceNames = {
-                    'website': 'Website Development',
-                    'ecommerce': 'E-commerce Store',
-                    'marketing': 'Digital Marketing'
-                };
-                const message = `Hello! I need ${serviceNames[service] || service} services.`;
-                this.openSecureChat(message);
+        const serviceButtons = document.querySelectorAll('.service-btn');
+        if (serviceButtons.length > 0) {
+            serviceButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const service = e.target.dataset.service;
+                    console.log('Service button clicked:', service);
+                    const serviceNames = {
+                        'website': 'Website Development',
+                        'ecommerce': 'E-commerce Store',
+                        'marketing': 'Digital Marketing'
+                    };
+                    const message = `Hello! I need ${serviceNames[service] || service} services.`;
+                    this.openSecureChat(message);
+                });
             });
-        });
+        }
+        
+        console.log('WhatsApp buttons setup complete');
     }
     
     openSecureChat(message = '') {
@@ -50,6 +62,8 @@ class WhatsAppManager {
         
         // Security verification
         this.logInteraction('whatsapp_click', { message });
+        
+        console.log('Opening WhatsApp chat:', url);
         
         // Open in new tab
         window.open(url, '_blank', 'noopener,noreferrer');
@@ -60,6 +74,8 @@ class WhatsAppManager {
         const phone = document.getElementById('quickPhone')?.value.trim() || '';
         const service = document.getElementById('quickService')?.value || '';
         const message = document.getElementById('quickMessage')?.value.trim() || '';
+        
+        console.log('Sending quick inquiry:', { name, phone, service });
         
         if (!name || !phone) {
             this.showAlert('Please enter your name and phone number.', 'warning');
@@ -118,6 +134,7 @@ class WhatsAppManager {
             border-radius: 8px;
             z-index: 10000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInRight 0.3s ease;
         `;
         document.body.appendChild(alert);
         setTimeout(() => alert.remove(), 3000);
@@ -134,29 +151,41 @@ class MobileMenu {
         this.menuToggle = document.getElementById('menuToggle');
         this.navMenu = document.getElementById('navMenu');
         this.navbar = document.querySelector('.navbar');
+        console.log('MobileMenu initialized');
+        console.log('Menu toggle found:', this.menuToggle);
+        console.log('Nav menu found:', this.navMenu);
         this.init();
     }
     
     init() {
-        if (!this.menuToggle || !this.navMenu) return;
+        if (!this.menuToggle || !this.navMenu) {
+            console.error('Mobile menu elements not found!');
+            return;
+        }
         
-        // Toggle menu
+        console.log('Setting up mobile menu event listeners...');
+        
+        // Toggle menu on hamburger click
         this.menuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            console.log('Menu toggle clicked');
             this.toggleMenu();
         });
         
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (this.isMenuOpen() && !this.navMenu.contains(e.target) && !this.menuToggle.contains(e.target)) {
+                console.log('Closing menu (clicked outside)');
                 this.closeMenu();
             }
         });
         
         // Close menu when clicking links
-        this.navMenu.querySelectorAll('a').forEach(link => {
+        const navLinks = this.navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 if (this.isMenuOpen()) {
+                    console.log('Closing menu (link clicked)');
                     this.closeMenu();
                 }
             });
@@ -165,6 +194,7 @@ class MobileMenu {
         // Close on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isMenuOpen()) {
+                console.log('Closing menu (escape key)');
                 this.closeMenu();
             }
         });
@@ -172,23 +202,40 @@ class MobileMenu {
         // Close on resize to desktop
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768 && this.isMenuOpen()) {
+                console.log('Closing menu (window resized to desktop)');
                 this.closeMenu();
             }
         });
+        
+        console.log('Mobile menu setup complete');
     }
     
     toggleMenu() {
+        const isOpening = !this.isMenuOpen();
+        
         this.navMenu.classList.toggle('active');
         this.menuToggle.classList.toggle('active');
-        document.body.style.overflow = this.isMenuOpen() ? 'hidden' : '';
-        this.menuToggle.setAttribute('aria-expanded', this.isMenuOpen());
+        
+        // Toggle body scroll lock
+        if (isOpening) {
+            document.body.classList.add('menu-open');
+            this.menuToggle.setAttribute('aria-expanded', 'true');
+            console.log('Menu opened');
+        } else {
+            document.body.classList.remove('menu-open');
+            this.menuToggle.setAttribute('aria-expanded', 'false');
+            console.log('Menu closed');
+        }
     }
     
     closeMenu() {
-        this.navMenu.classList.remove('active');
-        this.menuToggle.classList.remove('active');
-        document.body.style.overflow = '';
-        this.menuToggle.setAttribute('aria-expanded', 'false');
+        if (this.isMenuOpen()) {
+            this.navMenu.classList.remove('active');
+            this.menuToggle.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            this.menuToggle.setAttribute('aria-expanded', 'false');
+            console.log('Menu force closed');
+        }
     }
     
     isMenuOpen() {
@@ -212,6 +259,9 @@ class PaymentManager {
         this.referenceNumber = this.generateSecureReference();
         this.sessionId = this.generateSessionId();
         
+        console.log('PaymentManager initialized');
+        console.log('Initial reference:', this.referenceNumber);
+        
         this.init();
     }
     
@@ -229,15 +279,18 @@ class PaymentManager {
     }
     
     init() {
+        console.log('Initializing payment system...');
         this.setupPaymentOptions();
         this.setupQuoteCalculator();
         this.setupPaymentForm();
         this.setupPaymentDashboard();
         this.setupInvoiceSystem();
+        console.log('Payment system initialized');
     }
     
     setupPaymentOptions() {
         const options = document.querySelectorAll('.payment-option');
+        console.log('Found payment options:', options.length);
         
         options.forEach(option => {
             option.addEventListener('click', () => {
@@ -245,17 +298,24 @@ class PaymentManager {
                 option.classList.add('active');
                 
                 this.selectedMethod = option.dataset.method;
+                console.log('Payment method selected:', this.selectedMethod);
                 this.updatePaymentInstructions();
                 
                 // Log payment method selection
                 this.logPaymentActivity('method_selected', { method: this.selectedMethod });
             });
         });
+        
+        // Set first option as active by default
+        if (options.length > 0) {
+            options[0].click();
+        }
     }
     
     setupPaymentDashboard() {
         // Create dashboard element if it doesn't exist
         if (!document.getElementById('paymentDashboard')) {
+            console.log('Creating payment dashboard...');
             const dashboard = document.createElement('div');
             dashboard.id = 'paymentDashboard';
             dashboard.className = 'payment-dashboard';
@@ -288,12 +348,16 @@ class PaymentManager {
             const paymentSection = document.querySelector('.payment-form');
             if (paymentSection) {
                 paymentSection.parentNode.insertBefore(dashboard, paymentSection.nextSibling);
+                console.log('Payment dashboard added');
             }
         }
         
+        // Start periodic status updates
         this.dashboardUpdateInterval = setInterval(() => {
             this.updatePaymentStatus();
         }, 30000); // Update every 30 seconds
+        
+        console.log('Payment dashboard setup complete');
     }
     
     updatePaymentStatus() {
@@ -304,7 +368,7 @@ class PaymentManager {
             lastCheck.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
         
-        // Simulate status updates
+        // Simulate status updates (demo only - replace with real API calls)
         if (Math.random() > 0.7 && status && status.textContent === 'Pending') {
             status.textContent = 'Verified';
             status.className = 'status-badge verified';
@@ -328,6 +392,8 @@ class PaymentManager {
     }
     
     setupInvoiceSystem() {
+        console.log('Setting up invoice system...');
+        
         const invoiceBtn = document.createElement('button');
         invoiceBtn.className = 'btn-secondary invoice-btn';
         invoiceBtn.innerHTML = '<i class="fas fa-file-invoice"></i> Generate Invoice';
@@ -336,10 +402,13 @@ class PaymentManager {
         const paymentActions = document.querySelector('.payment-actions');
         if (paymentActions) {
             paymentActions.appendChild(invoiceBtn);
+            console.log('Invoice button added');
         }
     }
     
     generateInvoice() {
+        console.log('Generating invoice...');
+        
         if (this.currentAmount === 0) {
             alert('Please calculate a quote first.');
             return;
@@ -375,16 +444,25 @@ class PaymentManager {
             terms: '50% deposit, 50% on completion'
         };
         
+        console.log('Invoice data:', invoiceData);
         this.displayInvoice(invoiceData);
         this.logPaymentActivity('invoice_generated', invoiceData);
     }
     
     displayInvoice(data) {
+        console.log('Displaying invoice modal...');
+        
         const modal = document.getElementById('qrModal');
-        if (!modal) return;
+        if (!modal) {
+            console.error('QR modal not found');
+            return;
+        }
         
         const modalBody = modal.querySelector('.modal-body');
-        if (!modalBody) return;
+        if (!modalBody) {
+            console.error('Modal body not found');
+            return;
+        }
         
         modalBody.innerHTML = `
             <div class="invoice">
@@ -432,7 +510,7 @@ class PaymentManager {
                     <button class="btn-primary" onclick="window.print()">
                         <i class="fas fa-print"></i> Print Invoice
                     </button>
-                    <button class="btn-secondary" onclick="this.downloadInvoice('${encodeURIComponent(JSON.stringify(data))}')">
+                    <button class="btn-secondary" onclick="window.downloadInvoice('${encodeURIComponent(JSON.stringify(data))}')">
                         <i class="fas fa-download"></i> Download PDF
                     </button>
                 </div>
@@ -455,22 +533,26 @@ class PaymentManager {
                 modal.style.display = 'none';
             }
         };
-    }
-    
-    downloadInvoice(data) {
-        // In production, generate actual PDF
-        alert('PDF invoice would be generated here. In production, connect to PDF generation service.');
+        
+        console.log('Invoice modal displayed');
     }
     
     setupQuoteCalculator() {
+        console.log('Setting up quote calculator...');
+        
         const serviceSelect = document.getElementById('serviceType');
         const timelineSelect = document.getElementById('timeline');
         
-        if (!serviceSelect || !timelineSelect) return;
+        if (!serviceSelect || !timelineSelect) {
+            console.error('Quote calculator elements not found');
+            return;
+        }
         
         const calculateQuote = () => {
             const service = serviceSelect.value;
             const timeline = parseInt(timelineSelect.value);
+            
+            console.log('Calculating quote:', { service, timeline });
             
             if (!service) {
                 this.updateQuoteDisplay(0, 0, 0);
@@ -512,6 +594,8 @@ class PaymentManager {
         const proceedPaymentBtn = document.getElementById('proceedPayment');
         if (proceedPaymentBtn) {
             proceedPaymentBtn.addEventListener('click', () => {
+                console.log('Proceed to payment clicked');
+                
                 if (this.currentAmount === 0) {
                     alert('Please select a service first.');
                     return;
@@ -527,9 +611,12 @@ class PaymentManager {
         
         // Initialize calculation
         calculateQuote();
+        console.log('Quote calculator setup complete');
     }
     
     showPaymentOptions() {
+        console.log('Showing payment options...');
+        
         const paymentSection = document.querySelector('.payment-methods');
         if (paymentSection) {
             paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -553,10 +640,14 @@ class PaymentManager {
     }
     
     setupPaymentForm() {
+        console.log('Setting up payment form...');
+        
         // Generate payment button
         const generatePaymentBtn = document.getElementById('generatePayment');
         if (generatePaymentBtn) {
             generatePaymentBtn.addEventListener('click', () => {
+                console.log('Generate payment clicked');
+                
                 const phoneInput = document.getElementById('phoneNumber');
                 const phone = phoneInput?.value.trim();
                 
@@ -584,6 +675,7 @@ class PaymentManager {
         const verifyPaymentBtn = document.getElementById('verifyPayment');
         if (verifyPaymentBtn) {
             verifyPaymentBtn.addEventListener('click', () => {
+                console.log('Verify payment clicked');
                 this.verifyPayment();
             });
         }
@@ -595,6 +687,8 @@ class PaymentManager {
                 this.validatePhoneInput(e.target);
             });
         }
+        
+        console.log('Payment form setup complete');
     }
     
     validatePhoneNumber(phone) {
@@ -635,12 +729,16 @@ class PaymentManager {
             reference: this.referenceNumber
         };
         
+        console.log('Payment activity:', activity);
+        
         const activities = JSON.parse(localStorage.getItem('payment_activities') || '[]');
         activities.push(activity);
         localStorage.setItem('payment_activities', JSON.stringify(activities.slice(-100)));
     }
     
     updatePaymentInstructions() {
+        console.log('Updating payment instructions for method:', this.selectedMethod);
+        
         // Hide all instructions
         document.querySelectorAll('.instructions').forEach(el => {
             el.classList.add('hidden');
@@ -665,11 +763,16 @@ class PaymentManager {
     }
     
     showQRCode() {
+        console.log('Showing QR code for payment...');
+        
         const modal = document.getElementById('qrModal');
         const amount = this.currentAmount;
         const method = this.selectedMethod;
         
-        if (!modal) return;
+        if (!modal) {
+            console.error('QR modal not found');
+            return;
+        }
         
         // Generate QR code data with security features
         let qrData = '';
@@ -693,14 +796,18 @@ class PaymentManager {
         // Add timestamp for security
         qrData += `|${Date.now()}|${this.generateSecurityHash()}`;
         
+        console.log('QR data:', qrData);
+        
         // Display details in modal
         const modalAmount = document.getElementById('modalAmount');
         const modalRef = document.getElementById('modalRef');
         const modalAccount = document.getElementById('modalAccount');
+        const modalExpiry = document.getElementById('modalExpiry');
         
         if (modalAmount) modalAmount.textContent = `MK ${amount.toLocaleString()}`;
         if (modalRef) modalRef.textContent = this.referenceNumber;
         if (modalAccount) modalAccount.textContent = accountNumber;
+        if (modalExpiry) modalExpiry.textContent = '1 hour';
         
         // Generate QR code
         this.generateQRCodeElement(qrData);
@@ -722,6 +829,8 @@ class PaymentManager {
                 modal.style.display = 'none';
             }
         };
+        
+        console.log('QR code modal displayed');
     }
     
     generateSecurityHash() {
@@ -737,10 +846,15 @@ class PaymentManager {
     
     generateQRCodeElement(data) {
         const qrcodeDiv = document.getElementById('qrcode');
-        if (!qrcodeDiv) return;
+        if (!qrcodeDiv) {
+            console.error('QR code div not found');
+            return;
+        }
         
         // Clear previous QR
         qrcodeDiv.innerHTML = '';
+        
+        console.log('Generating QR code element...');
         
         // Create canvas for QR code
         const canvas = document.createElement('canvas');
@@ -749,7 +863,10 @@ class PaymentManager {
         qrcodeDiv.appendChild(canvas);
         
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error('Canvas context not available');
+            return;
+        }
         
         // Draw QR code background
         ctx.fillStyle = '#ffffff';
@@ -783,9 +900,13 @@ class PaymentManager {
         ctx.fillStyle = '#666';
         ctx.font = '12px Arial';
         ctx.fillText(this.selectedMethod.toUpperCase(), 100, 180);
+        
+        console.log('QR code generated');
     }
     
     async verifyPayment() {
+        console.log('Starting payment verification...');
+        
         const statusDiv = document.getElementById('paymentStatus');
         const phoneInput = document.getElementById('phoneNumber');
         const phone = phoneInput?.value.trim();
@@ -798,6 +919,8 @@ class PaymentManager {
         statusDiv.innerHTML = '<div class="verification-loading"><i class="fas fa-spinner fa-spin"></i> Verifying payment securely...</div>';
         statusDiv.className = 'verifying';
         
+        console.log('Payment verification in progress...');
+        
         // Enhanced verification with security checks
         setTimeout(() => {
             // Check for common fraud patterns
@@ -807,6 +930,7 @@ class PaymentManager {
                 statusDiv.innerHTML = '<div class="verification-error"><i class="fas fa-shield-alt"></i> Security check failed. Please contact support.</div>';
                 statusDiv.className = 'security-alert';
                 this.logPaymentActivity('fraud_detected', { phone: this.maskPhoneNumber(phone), amount: this.currentAmount });
+                console.log('Fraud detected in payment verification');
                 return;
             }
             
@@ -840,6 +964,8 @@ class PaymentManager {
                     reference: this.referenceNumber 
                 });
                 
+                console.log('Payment verified successfully');
+                
                 // Send secure WhatsApp confirmation
                 setTimeout(() => {
                     const message = `✅ Payment confirmed! Ref: ${this.referenceNumber}. We'll start your project soon. Security Code: ${this.generateSecurityHash()}`;
@@ -855,6 +981,7 @@ class PaymentManager {
             } else {
                 statusDiv.innerHTML = '<div class="verification-failed"><i class="fas fa-times-circle"></i> Payment not found. Please try again or contact support.</div>';
                 statusDiv.className = 'error';
+                console.log('Payment verification failed');
             }
         }, 3000); // Increased delay for realistic verification
     }
@@ -876,6 +1003,8 @@ class PaymentManager {
     }
     
     showClientPortalAccess() {
+        console.log('Showing client portal access...');
+        
         const portalDiv = document.createElement('div');
         portalDiv.className = 'client-portal';
         portalDiv.innerHTML = `
@@ -902,7 +1031,7 @@ class PaymentManager {
                         <span>Direct Messaging</span>
                     </div>
                 </div>
-                <button class="btn-primary" onclick="this.accessClientPortal()">
+                <button class="btn-primary portal-access-btn">
                     <i class="fas fa-sign-in-alt"></i> Access Portal
                 </button>
             </div>
@@ -911,10 +1040,20 @@ class PaymentManager {
         const paymentStatus = document.getElementById('paymentStatus');
         if (paymentStatus && paymentStatus.parentNode) {
             paymentStatus.parentNode.insertBefore(portalDiv, paymentStatus.nextSibling);
+            
+            // Add event listener to portal button
+            const portalBtn = portalDiv.querySelector('.portal-access-btn');
+            if (portalBtn) {
+                portalBtn.addEventListener('click', () => {
+                    this.accessClientPortal();
+                });
+            }
         }
         
         // Log portal creation
         this.logPaymentActivity('portal_created', { reference: this.referenceNumber });
+        
+        console.log('Client portal access shown');
     }
     
     generateAccessCode() {
@@ -922,6 +1061,7 @@ class PaymentManager {
     }
     
     accessClientPortal() {
+        console.log('Accessing client portal...');
         alert('Client portal would open here. In production, this would connect to your project management system.');
         // In production: window.open(`https://portal.hepecodigital.com/${this.referenceNumber}`);
     }
@@ -930,6 +1070,7 @@ class PaymentManager {
 // Quick Quote Feature
 class QuickQuote {
     constructor() {
+        console.log('QuickQuote initialized');
         this.init();
     }
     
@@ -939,6 +1080,7 @@ class QuickQuote {
         if (showQuoteBtn) {
             showQuoteBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log('Show quote button clicked');
                 const quoteSection = document.getElementById('quote');
                 if (quoteSection) {
                     quoteSection.scrollIntoView({ behavior: 'smooth' });
@@ -952,9 +1094,13 @@ class QuickQuote {
         
         // Add quote saving feature
         this.setupQuoteSaving();
+        
+        console.log('QuickQuote setup complete');
     }
     
     showQuoteTooltip() {
+        console.log('Showing quote tooltip...');
+        
         const tooltip = document.createElement('div');
         tooltip.className = 'quote-tooltip';
         tooltip.innerHTML = `
@@ -975,6 +1121,8 @@ class QuickQuote {
     }
     
     setupQuoteSaving() {
+        console.log('Setting up quote saving...');
+        
         const saveQuoteBtn = document.createElement('button');
         saveQuoteBtn.className = 'btn-secondary save-quote-btn';
         saveQuoteBtn.innerHTML = '<i class="fas fa-save"></i> Save Quote';
@@ -984,10 +1132,13 @@ class QuickQuote {
         const proceedBtn = document.getElementById('proceedPayment');
         if (quoteBox && proceedBtn) {
             quoteBox.insertBefore(saveQuoteBtn, proceedBtn);
+            console.log('Save quote button added');
         }
     }
     
     saveCurrentQuote() {
+        console.log('Saving current quote...');
+        
         const serviceSelect = document.getElementById('serviceType');
         const timelineSelect = document.getElementById('timeline');
         
@@ -1017,10 +1168,13 @@ class QuickQuote {
         savedQuotes.push(quote);
         localStorage.setItem('saved_quotes', JSON.stringify(savedQuotes.slice(-10))); // Keep last 10
         
+        console.log('Quote saved:', quote);
         this.showQuoteSavedNotification(quote.id);
     }
     
     showQuoteSavedNotification(quoteId) {
+        console.log('Showing quote saved notification:', quoteId);
+        
         const notification = document.createElement('div');
         notification.className = 'quote-notification';
         notification.innerHTML = `
@@ -1040,6 +1194,8 @@ class QuickQuote {
     }
     
     updateDefaultQuote() {
+        console.log('Updating default quote...');
+        
         // Set default values
         const serviceSelect = document.getElementById('serviceType');
         const timelineSelect = document.getElementById('timeline');
@@ -1052,72 +1208,103 @@ class QuickQuote {
             if (typeof Event === 'function') {
                 serviceSelect.dispatchEvent(new Event('change'));
             }
+            
+            console.log('Default quote set');
         }
     }
 }
 
 // Main Application Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize optimized managers
-    const whatsappManager = new WhatsAppManager();
-    const paymentManager = new PaymentManager();
-    const quickQuote = new QuickQuote();
-    const mobileMenu = new MobileMenu();
+    console.log('DOM Content Loaded - Initializing Hepeco Digital website...');
     
-    // Initialize security features if available
-    if (typeof EnhancedSecurityConfig !== 'undefined') {
-        try {
-            const securityConfig = new EnhancedSecurityConfig();
-            window.SecurityConfig = securityConfig;
-        } catch (error) {
-            console.warn('Security config initialization failed:', error);
+    try {
+        // Initialize optimized managers
+        console.log('Initializing WhatsAppManager...');
+        const whatsappManager = new WhatsAppManager();
+        
+        console.log('Initializing PaymentManager...');
+        const paymentManager = new PaymentManager();
+        
+        console.log('Initializing QuickQuote...');
+        const quickQuote = new QuickQuote();
+        
+        console.log('Initializing MobileMenu...');
+        const mobileMenu = new MobileMenu();
+        
+        // Initialize security features if available
+        if (typeof EnhancedSecurityConfig !== 'undefined') {
+            try {
+                console.log('Initializing EnhancedSecurityConfig...');
+                const securityConfig = new EnhancedSecurityConfig();
+                window.SecurityConfig = securityConfig;
+            } catch (error) {
+                console.warn('Security config initialization failed:', error);
+            }
         }
+        
+        if (typeof EnhancedSessionSecurity !== 'undefined') {
+            try {
+                console.log('Initializing EnhancedSessionSecurity...');
+                const sessionSecurity = new EnhancedSessionSecurity();
+                window.SessionSecurity = sessionSecurity;
+            } catch (error) {
+                console.warn('Session security initialization failed:', error);
+            }
+        }
+        
+        // Setup smooth scrolling for anchor links
+        console.log('Setting up smooth scrolling...');
+        setupSmoothScrolling();
+        
+        // Setup active menu highlighting
+        console.log('Setting up active menu highlighting...');
+        setupActiveMenu();
+        
+        // Setup email button
+        console.log('Setting up email button...');
+        setupEmailButton();
+        
+        // Setup modal close functionality
+        console.log('Setting up modal close functionality...');
+        setupModalClose();
+        
+        // Setup client portal access button
+        console.log('Setting up client portal access...');
+        setupClientPortalAccess();
+        
+        // Update reference number every hour with security
+        console.log('Setting up reference number rotation...');
+        setInterval(() => {
+            try {
+                paymentManager.referenceNumber = paymentManager.generateSecureReference();
+                paymentManager.updatePaymentInstructions();
+                
+                // Log reference rotation
+                console.log('Payment reference rotated for security');
+            } catch (error) {
+                console.error('Error rotating payment reference:', error);
+            }
+        }, 3600000);
+        
+        // Add security warning for suspicious activities
+        window.addEventListener('beforeunload', (e) => {
+            const hasPendingPayment = document.querySelector('.verifying');
+            if (hasPendingPayment) {
+                e.preventDefault();
+                e.returnValue = 'You have a payment verification in progress. Are you sure you want to leave?';
+            }
+        });
+        
+        // Initialize security features
+        console.log('Initializing security features...');
+        initializeSecurityFeatures();
+        
+        console.log('✅ Hepeco Digital website initialized successfully!');
+        
+    } catch (error) {
+        console.error('❌ Error initializing website:', error);
     }
-    
-    if (typeof EnhancedSessionSecurity !== 'undefined') {
-        try {
-            const sessionSecurity = new EnhancedSessionSecurity();
-            window.SessionSecurity = sessionSecurity;
-        } catch (error) {
-            console.warn('Session security initialization failed:', error);
-        }
-    }
-    
-    // Setup smooth scrolling for anchor links
-    setupSmoothScrolling();
-    
-    // Setup active menu highlighting
-    setupActiveMenu();
-    
-    // Setup email button
-    setupEmailButton();
-    
-    // Update reference number every hour with security
-    setInterval(() => {
-        try {
-            paymentManager.referenceNumber = paymentManager.generateSecureReference();
-            paymentManager.updatePaymentInstructions();
-            
-            // Log reference rotation
-            console.log('Payment reference rotated for security');
-        } catch (error) {
-            console.error('Error rotating payment reference:', error);
-        }
-    }, 3600000);
-    
-    // Add security warning for suspicious activities
-    window.addEventListener('beforeunload', (e) => {
-        const hasPendingPayment = document.querySelector('.verifying');
-        if (hasPendingPayment) {
-            e.preventDefault();
-            e.returnValue = 'You have a payment verification in progress. Are you sure you want to leave?';
-        }
-    });
-    
-    // Initialize security features
-    initializeSecurityFeatures();
-    
-    console.log('Hepeco Digital website initialized successfully');
 });
 
 function setupSmoothScrolling() {
@@ -1144,6 +1331,11 @@ function setupActiveMenu() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
     
+    if (sections.length === 0 || navLinks.length === 0) {
+        console.log('No sections or nav links found for active menu highlighting');
+        return;
+    }
+    
     window.addEventListener('scroll', () => {
         let current = '';
         
@@ -1151,7 +1343,7 @@ function setupActiveMenu() {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.clientHeight;
             
-            if (pageYOffset >= (sectionTop - 100)) {
+            if (window.pageYOffset >= (sectionTop - 100)) {
                 current = section.getAttribute('id');
             }
         });
@@ -1201,7 +1393,45 @@ function setupEmailButton() {
     }
 }
 
+function setupModalClose() {
+    // Close all modals when clicking outside
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+    
+    // Close modals with escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+    });
+}
+
+function setupClientPortalAccess() {
+    const portalAccessBtn = document.getElementById('accessPortal');
+    if (portalAccessBtn) {
+        portalAccessBtn.addEventListener('click', () => {
+            const reference = document.getElementById('portalReference')?.value.trim();
+            const phone = document.getElementById('portalPhone')?.value.trim();
+            
+            if (!reference || !phone) {
+                alert('Please enter both payment reference and phone number.');
+                return;
+            }
+            
+            alert('Accessing client portal... In production, this would verify your credentials and redirect you.');
+            // In production: window.open(`https://portal.hepecodigital.com/access?ref=${reference}&phone=${phone}`);
+        });
+    }
+}
+
 function initializeSecurityFeatures() {
+    console.log('Initializing security monitoring...');
+    
     // Add security indicators
     const securityIndicator = document.createElement('div');
     securityIndicator.className = 'security-indicator';
@@ -1226,6 +1456,7 @@ function initializeSecurityFeatures() {
         },
         
         showActivityWarning: function() {
+            console.log('Unusual activity detected');
             const warning = document.createElement('div');
             warning.className = 'activity-warning';
             warning.innerHTML = `
@@ -1243,6 +1474,8 @@ function initializeSecurityFeatures() {
     
     // Track clicks
     document.addEventListener('click', () => activityMonitor.incrementClick());
+    
+    console.log('Security features initialized');
 }
 
 // Make PaymentManager accessible for interval updates
@@ -1252,6 +1485,7 @@ window.PaymentManager = PaymentManager;
 window.downloadInvoice = function(data) {
     try {
         const invoiceData = JSON.parse(decodeURIComponent(data));
+        console.log('Downloading invoice:', invoiceData.invoiceNumber);
         alert(`Downloading invoice ${invoiceData.invoiceNumber}...\n\nIn production, this would generate a PDF.`);
     } catch (error) {
         console.error('Error downloading invoice:', error);
@@ -1260,8 +1494,33 @@ window.downloadInvoice = function(data) {
 };
 
 // Helper function for client portal access
-PaymentManager.prototype.accessClientPortal = function() {
+window.accessClientPortal = function() {
+    console.log('Accessing client portal from window');
     alert('Client portal would open here. In production, this would connect to your project management system.');
+};
+
+// Debug function to test menu
+window.testMenu = function() {
+    console.log('Testing mobile menu...');
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (menuToggle && navMenu) {
+        console.log('Menu elements found');
+        console.log('Menu toggle has active class:', menuToggle.classList.contains('active'));
+        console.log('Nav menu has active class:', navMenu.classList.contains('active'));
+        
+        // Toggle menu
+        navMenu.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+        
+        console.log('After toggle:');
+        console.log('Menu toggle has active class:', menuToggle.classList.contains('active'));
+        console.log('Nav menu has active class:', navMenu.classList.contains('active'));
+    } else {
+        console.error('Menu elements not found');
+    }
 };
 
 // Export classes for debugging
@@ -1272,4 +1531,4 @@ if (typeof module !== 'undefined' && module.exports) {
         PaymentManager,
         QuickQuote
     };
-                }
+    }
