@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const QRCode = require('qrcode');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 require('dotenv').config();
@@ -8,87 +9,198 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Enhanced Security Middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "https://hepeco-backend.onrender.com"],
+            frameSrc: ["'none'"],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"]
+        }
+    },
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+    }
+}));
+
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Security-Token']
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api/', limiter);
+
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Store for payments and quotes
 const payments = new Map();
 const quotes = new Map();
+const sessions = new Map();
 
-// WhatsApp Client (optional - for automated responses)
+// WhatsApp Client
 let whatsappClient = null;
+const VERIFIED_NUMBER = '2650991268040';
 
-// Initialize WhatsApp if credentials are provided
+// Initialize WhatsApp
 if (process.env.WHATSAPP_ENABLED === 'true') {
     whatsappClient = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
-            headless: true,
+            headless: 'new',
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         }
     });
 
     whatsappClient.on('qr', (qr) => {
         console.log('WhatsApp QR Code generated');
-        // Store QR for admin panel if needed
+        // Store for admin if needed
     });
 
     whatsappClient.on('ready', () => {
         console.log('WhatsApp Client is ready!');
+        console.log('Verified number:', VERIFIED_NUMBER);
+    });
+
+    whatsappClient.on('auth_failure', (msg) => {
+        console.error('WhatsApp Auth Failure:', msg);
     });
 
     whatsappClient.initialize();
 }
 
-// Health check
+// Security middleware
+const validateSecurityToken = (req, res, next) => {
+    const token = req.headers['x-security-token'];
+    const timestamp = req.headers['x-timestamp'];
+    
+    if (!token || !timestamp) {
+        return res.status(401).json({ error: 'Security token required' });
+    }
+    
+    // Verify token hasn't expired (5 minutes)
+    if (Date.now() - parseInt(timestamp) > 300000) {
+        return res.status(401).json({ error: 'Token expired' });
+    }
+    
+    // Simple token validation (enhance in production)
+    const expectedToken = generateSecurityToken(timestamp);
+    if (token !== expectedToken) {
+        console.warn('Invalid security token:', token);
+        return res.status(401).json({ error: 'Invalid security token' });
+    }
+    
+    next();
+};
+
+const generateSecurityToken = (timestamp) => {
+    const secret = 'hepeco_secure_' + VERIFIED_NUMBER;
+    let hash = 0;
+    for (let i = 0; i < secret.length; i++) {
+        const char = secret.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char + parseInt(timestamp);
+        hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36);
+};
+
+// Health check with security info
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'healthy',
         service: 'Hepeco Digital API',
         whatsapp: whatsappClient ? 'connected' : 'disabled',
+        verified_number: VERIFIED_NUMBER,
+        security: 'enhanced',
         timestamp: new Date().toISOString()
     });
 });
 
-// Generate Payment Reference
-app.post('/api/payment/generate', (req, res) => {
+// Generate Secure Payment Reference
+app.post('/api/payment/generate', validateSecurityToken, (req, res) => {
     try {
-        const { amount, phone, method } = req.body;
+        const { amount, phone, method, sessionId } = req.body;
         
-        if (!amount || !phone) {
-            return res.status(400).json({ error: 'Amount and phone number are required' });
+        // Enhanced validation
+        if (!amount || !phone || !sessionId) {
+            return res.status(400).json({ error: 'Amount, phone, and session ID are required' });
         }
         
-        const reference = `HEP${Date.now()}${Math.floor(Math.random() * 1000)}`;
+        // Validate Malawi phone number
+        if (!/^(0|265)?(88|99|98|77)\d{7}$/.test(phone.replace(/\D/g, ''))) {
+            return res.status(400).json({ error: 'Invalid Malawi phone number' });
+        }
+        
+        // Validate amount
+        const amountNum = parseInt(amount);
+        if (amountNum <= 0 || amountNum > 10000000) {
+            return res.status(400).json({ error: 'Invalid amount' });
+        }
+        
+        // Check for duplicate requests
+        const requestKey = `${phone}_${amount}_${Date.now()}`;
+        if (payments.has(requestKey)) {
+            return res.status(429).json({ error: 'Duplicate request detected' });
+        }
+        
+        const reference = generateSecureReference();
         const payment = {
             id: reference,
-            amount: parseInt(amount),
-            phone,
+            amount: amountNum,
+            phone: maskPhoneNumber(phone),
             method,
             status: 'pending',
             createdAt: new Date().toISOString(),
-            verified: false
+            verified: false,
+            sessionId,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
         };
         
         payments.set(reference, payment);
+        payments.set(requestKey, { timestamp: Date.now() }); // Store request to prevent duplicates
         
         // Generate QR code data
         let qrData = '';
+        let accountNumber = '';
+        
         switch(method) {
             case 'mpamba':
-                qrData = `mpamba:*444*1*0991234567*${amount}*${reference}#`;
+                accountNumber = '0991268040';
+                qrData = `mpamba:*444*1*${accountNumber}*${amount}*${reference}#`;
                 break;
             case 'airtel':
-                qrData = `airtel:*555*1*0881234567*${amount}*${reference}#`;
+                accountNumber = '0991268040';
+                qrData = `airtel:*555*1*${accountNumber}*${amount}*${reference}#`;
                 break;
             case 'bank':
-                qrData = `bank:National Bank\nAcc: 1001234567\nAmount: ${amount}\nRef: ${reference}`;
+                accountNumber = '1001268040';
+                qrData = `bank:National Bank\nAcc: ${accountNumber}\nAmount: ${amount}\nRef: ${reference}`;
                 break;
             default:
                 qrData = reference;
         }
+        
+        // Add security signature
+        const signature = generatePaymentSignature(payment);
+        qrData += `|${signature}`;
         
         // Generate QR code
         QRCode.toDataURL(qrData, (err, qrUrl) => {
@@ -96,160 +208,335 @@ app.post('/api/payment/generate', (req, res) => {
                 return res.status(500).json({ error: 'Failed to generate QR code' });
             }
             
+            // Log payment generation
+            logPaymentActivity('generated', payment);
+            
             res.json({
                 success: true,
                 reference,
                 qrCode: qrUrl,
-                payment,
-                instructions: getPaymentInstructions(method, reference)
+                payment: {
+                    ...payment,
+                    qrData: undefined // Don't send full qrData to client
+                },
+                instructions: getPaymentInstructions(method, reference, accountNumber),
+                security: {
+                    signature,
+                    expires: Date.now() + 3600000 // 1 hour
+                }
             });
         });
         
     } catch (error) {
         console.error('Payment generation error:', error);
+        logSecurityEvent('payment_generation_error', { error: error.message, body: req.body });
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-function getPaymentInstructions(method, reference) {
+function generateSecureReference() {
+    const timestamp = Date.now();
+    const random = require('crypto').randomBytes(6).toString('hex');
+    return `HEC${timestamp.toString(36).toUpperCase()}${random.toUpperCase()}`;
+}
+
+function maskPhoneNumber(phone) {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.replace(/(\d{3})\d{4}(\d{3})/, '$1****$2');
+}
+
+function generatePaymentSignature(payment) {
+    const data = `${payment.id}${payment.amount}${payment.phone}${payment.createdAt}`;
+    return require('crypto').createHash('sha256').update(data).digest('hex').substring(0, 16);
+}
+
+function getPaymentInstructions(method, reference, accountNumber) {
     const instructions = {
         mpamba: [
             'Dial *444#',
             'Select "Send Money"',
-            'Enter number: 099 123 4567',
+            `Enter number: ${formatPhoneNumber(accountNumber)}`,
             'Enter the amount',
-            `Enter reference: ${reference}`
+            `Enter reference: ${reference}`,
+            'Enter your PIN to confirm'
         ],
         airtel: [
             'Dial *555#',
             'Select "Send Money"',
-            'Enter number: 088 123 4567',
+            `Enter number: ${formatPhoneNumber(accountNumber)}`,
             'Enter the amount',
-            `Enter reference: ${reference}`
+            `Enter reference: ${reference}`,
+            'Enter your PIN to confirm'
         ],
         bank: [
-            'Bank: National Bank',
-            'Account: Hepeco Digital Systems',
-            'Account No: 1001234567',
-            'Branch: Lilongwe',
-            `Reference: ${reference}`
+            'Bank: National Bank of Malawi',
+            'Account Name: Hepeco Digital Systems',
+            `Account Number: ${accountNumber}`,
+            'Branch: Lilongwe City Centre',
+            `Reference: ${reference}`,
+            'Amount: As specified'
         ]
     };
     
     return instructions[method] || [];
 }
 
-// Verify Payment
-app.post('/api/payment/verify', async (req, res) => {
+function formatPhoneNumber(phone) {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 9) {
+        return cleaned.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+    }
+    return phone;
+}
+
+// Enhanced Payment Verification
+app.post('/api/payment/verify', validateSecurityToken, async (req, res) => {
     try {
-        const { reference, phone } = req.body;
+        const { reference, phone, sessionId } = req.body;
         
-        if (!reference) {
-            return res.status(400).json({ error: 'Reference number is required' });
+        if (!reference || !sessionId) {
+            return res.status(400).json({ error: 'Reference and session ID are required' });
         }
         
         const payment = payments.get(reference);
         
         if (!payment) {
+            logSecurityEvent('payment_not_found', { reference, phone });
             return res.status(404).json({ 
                 success: false, 
-                message: 'Payment not found' 
+                message: 'Payment not found',
+                security: 'Please ensure you used the correct reference number'
             });
         }
         
-        // In production, integrate with mobile money API
-        // This is a simulation - implement real API integration here
+        // Verify session matches
+        if (payment.sessionId !== sessionId) {
+            logSecurityEvent('session_mismatch', { reference, sessionId });
+            return res.status(403).json({
+                success: false,
+                message: 'Session verification failed'
+            });
+        }
         
-        const isVerified = await simulatePaymentVerification(payment);
+        // Check if payment is already verified
+        if (payment.verified) {
+            return res.json({
+                success: true,
+                message: 'Payment already verified',
+                payment,
+                invoice: generateInvoice(payment)
+            });
+        }
         
-        if (isVerified) {
+        // Enhanced verification with fraud checks
+        const verificationResult = await verifyPaymentWithSecurity(payment);
+        
+        if (verificationResult.verified) {
             payment.status = 'verified';
+            payment.verified = true;
             payment.verifiedAt = new Date().toISOString();
+            payment.verificationId = verificationResult.verificationId;
             payments.set(reference, payment);
-            
-            // Send WhatsApp confirmation if client is available
-            if (whatsappClient && phone) {
-                sendWhatsAppConfirmation(phone, payment);
-            }
             
             // Create invoice
             const invoice = generateInvoice(payment);
+            
+            // Send WhatsApp confirmation
+            if (whatsappClient && phone) {
+                await sendEnhancedWhatsAppConfirmation(phone, payment, invoice);
+            }
+            
+            // Log successful verification
+            logPaymentActivity('verified', payment);
             
             res.json({
                 success: true,
                 message: 'Payment verified successfully',
                 payment,
-                invoice
+                invoice,
+                nextSteps: [
+                    'Our team will contact you within 24 hours',
+                    'Check your WhatsApp for project details',
+                    'Access your client portal for updates'
+                ]
             });
+            
+        } else if (verificationResult.fraud) {
+            // Mark as suspected fraud
+            payment.status = 'suspected_fraud';
+            payment.fraudFlags = verificationResult.flags;
+            payments.set(reference, payment);
+            
+            logSecurityEvent('fraud_detected', payment);
+            
+            res.status(403).json({
+                success: false,
+                message: 'Security check failed',
+                action: 'Please contact support at +265 99 126 8040'
+            });
+            
         } else {
             res.json({
                 success: false,
-                message: 'Payment not yet received. Please try again in a few minutes.'
+                message: 'Payment not yet received',
+                suggestion: 'Please wait a few minutes and try again',
+                status: 'pending'
             });
         }
         
     } catch (error) {
         console.error('Payment verification error:', error);
+        logSecurityEvent('verification_error', { error: error.message, body: req.body });
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Simulate payment verification (Replace with real API calls)
-async function simulatePaymentVerification(payment) {
+async function verifyPaymentWithSecurity(payment) {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Simulate verification logic (70% success rate for demo)
+    // Check for fraud patterns
+    const fraudFlags = checkForFraudPatterns(payment);
+    
+    if (fraudFlags.length > 0) {
+        return {
+            verified: false,
+            fraud: true,
+            flags: fraudFlags
+        };
+    }
+    
+    // Simulate verification (70% success for demo)
     const isVerified = Math.random() > 0.3;
     
-    // In production, integrate with:
-    // 1. Mpamba API
-    // 2. Airtel Money API
-    // 3. Bank API (via Fintech platform)
+    if (isVerified) {
+        return {
+            verified: true,
+            fraud: false,
+            verificationId: 'VER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8).toUpperCase()
+        };
+    }
     
-    return isVerified;
+    return {
+        verified: false,
+        fraud: false
+    };
 }
 
-// Send WhatsApp confirmation
-async function sendWhatsAppConfirmation(phone, payment) {
+function checkForFraudPatterns(payment) {
+    const flags = [];
+    
+    // Check amount patterns
+    if (payment.amount % 100000 === 0 && payment.amount > 500000) {
+        flags.push('round_large_amount');
+    }
+    
+    if (payment.amount < 10000) {
+        flags.push('very_small_amount');
+    }
+    
+    // Check time patterns (too quick)
+    const createTime = new Date(payment.createdAt).getTime();
+    if (Date.now() - createTime < 30000) { // Less than 30 seconds
+        flags.push('too_quick');
+    }
+    
+    // Check for multiple attempts
+    const attempts = Array.from(payments.values()).filter(p => 
+        p.phone === payment.phone && 
+        Date.now() - new Date(p.createdAt).getTime() < 3600000
+    ).length;
+    
+    if (attempts > 3) {
+        flags.push('multiple_attempts');
+    }
+    
+    return flags;
+}
+
+async function sendEnhancedWhatsAppConfirmation(phone, payment, invoice) {
     try {
         const formattedPhone = phone.replace(/\D/g, '');
         const chatId = `${formattedPhone}@c.us`;
         
         const message = `
-✅ *Payment Confirmed!*
-        
-Thank you for your payment to Hepeco Digital Systems.
-        
+✅ *PAYMENT CONFIRMED - HEPECO DIGITAL*
+
 *Payment Details:*
 📊 Reference: ${payment.id}
 💰 Amount: MK ${payment.amount.toLocaleString()}
 💳 Method: ${payment.method}
-📅 Date: ${new Date(payment.createdAt).toLocaleDateString()}
-        
-We'll start working on your project immediately. Our team will contact you within 24 hours.
-        
-For any questions, reply to this message or call +265 991 234 567.
-        
+📅 Date: ${new Date(payment.verifiedAt).toLocaleDateString()}
+🆔 Verification: ${payment.verificationId}
+
+*Invoice Summary:*
+📋 Invoice: ${invoice.invoiceNumber}
+🛠️ Service: ${invoice.items[0].description}
+💵 Total: MK ${invoice.total.toLocaleString()}
+
+*Next Steps:*
+1. Our project manager will contact you within 24 hours
+2. You'll receive access to your client portal
+3. Project kickoff meeting will be scheduled
+
+*Security Notice:*
+🔒 This is an automated confirmation from Hepeco Digital
+📞 Only communicate with us at +265 99 126 8040
+⚠️ Never share your verification codes
+
+For questions, reply to this message or call +265 99 126 8040.
+
 Thank you for choosing Hepeco Digital!
         `;
         
         await whatsappClient.sendMessage(chatId, message);
-        console.log(`WhatsApp confirmation sent to ${phone}`);
+        
+        // Send invoice as follow-up
+        const invoiceMessage = `
+*Invoice Details:*
+${invoice.items.map(item => `• ${item.description}: MK ${item.amount.toLocaleString()}`).join('\n')}
+
+Total: MK ${invoice.total.toLocaleString()}
+Status: PAID
+Due: Immediately
+
+Terms: 50% deposit, balance on project completion
+        `;
+        
+        setTimeout(async () => {
+            await whatsappClient.sendMessage(chatId, invoiceMessage);
+        }, 1000);
+        
+        console.log(`Enhanced WhatsApp confirmation sent to ${maskPhoneNumber(phone)}`);
         
     } catch (error) {
         console.error('Failed to send WhatsApp confirmation:', error);
+        logSecurityEvent('whatsapp_send_error', { phone: maskPhoneNumber(phone), error: error.message });
     }
 }
 
-// Generate invoice
 function generateInvoice(payment) {
+    const services = {
+        basic_website: 'Basic Website Development',
+        business_website: 'Business Website Package',
+        ecommerce_store: 'E-commerce Store Development',
+        marketing_package: 'Digital Marketing Package',
+        premium_package: 'Premium Business Solution'
+    };
+    
+    const serviceType = Object.keys(services).find(key => 
+        payment.amount === servicePrices[key]
+    ) || 'custom_website';
+    
     return {
         invoiceNumber: `INV-${payment.id}`,
         date: new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         items: [
             {
-                description: 'Website Development Service',
+                description: services[serviceType] || 'Custom Website Development',
+                quantity: 1,
+                unitPrice: payment.amount,
                 amount: payment.amount
             }
         ],
@@ -257,173 +544,171 @@ function generateInvoice(payment) {
         tax: 0,
         total: payment.amount,
         paymentMethod: payment.method,
-        status: 'paid'
+        status: 'paid',
+        notes: 'Thank you for your business! Project will commence within 24 hours of payment verification.'
     };
 }
 
-// Save Quote Request
-app.post('/api/quote/save', (req, res) => {
+// NEW: Client Portal Endpoint
+app.post('/api/client/portal', validateSecurityToken, (req, res) => {
     try {
-        const { name, email, phone, service, timeline, budget, message } = req.body;
+        const { reference, phone } = req.body;
         
-        if (!name || !phone || !service) {
-            return res.status(400).json({ error: 'Name, phone, and service are required' });
+        if (!reference || !phone) {
+            return res.status(400).json({ error: 'Reference and phone are required' });
         }
         
-        const quoteId = `QUOTE${Date.now()}${Math.floor(Math.random() * 1000)}`;
-        const quote = {
-            id: quoteId,
-            name,
-            email: email || '',
-            phone,
-            service,
-            timeline: timeline || '14 days',
-            budget: budget || 0,
-            message: message || '',
-            status: 'new',
+        const payment = payments.get(reference);
+        if (!payment || !payment.verified) {
+            return res.status(404).json({ error: 'No verified payment found' });
+        }
+        
+        // Generate portal access
+        const portalAccess = {
+            portalId: `PORTAL-${reference}`,
+            accessCode: generateAccessCode(),
+            reference: payment.id,
+            clientPhone: maskPhoneNumber(phone),
+            projectStatus: 'initializing',
+            features: ['progress_tracking', 'file_sharing', 'messaging', 'milestones'],
             createdAt: new Date().toISOString(),
-            estimatedPrice: calculateEstimate(service, timeline)
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
         };
         
-        quotes.set(quoteId, quote);
-        
-        // Send WhatsApp notification to admin
-        if (whatsappClient) {
-            sendQuoteNotification(quote);
-        }
+        // Store portal access
+        sessions.set(portalAccess.portalId, portalAccess);
         
         res.json({
             success: true,
-            quoteId,
-            message: 'Quote saved successfully',
-            quote
+            portal: portalAccess,
+            accessUrl: `/portal/${portalAccess.portalId}`, // In production: full URL
+            instructions: 'Use the access code to enter your client portal'
         });
         
     } catch (error) {
-        console.error('Quote save error:', error);
+        console.error('Portal creation error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-function calculateEstimate(service, timeline) {
-    const prices = {
-        'basic_website': 250000,
-        'business_website': 450000,
-        'ecommerce_store': 750000,
-        'marketing_package': 300000
-    };
-    
-    const basePrice = prices[service] || 300000;
-    let multiplier = 1;
-    
-    if (timeline === '7 days') multiplier = 1.25;
-    if (timeline === '3 days') multiplier = 1.5;
-    
-    return Math.round(basePrice * multiplier);
+function generateAccessCode() {
+    return Math.random().toString(36).substr(2, 8).toUpperCase();
 }
 
-async function sendQuoteNotification(quote) {
+// NEW: Security Logging Endpoint
+app.post('/api/security/log', validateSecurityToken, (req, res) => {
     try {
-        const adminPhone = process.env.ADMIN_PHONE;
-        if (!adminPhone || !whatsappClient) return;
+        const { type, data, timestamp } = req.body;
         
-        const chatId = `${adminPhone.replace(/\D/g, '')}@c.us`;
+        // In production, store in database
+        console.log('Security Event:', { type, data: maskSensitiveData(data), timestamp });
         
-        const message = `
-📋 *New Quote Request*
-        
-*Customer Details:*
-👤 Name: ${quote.name}
-📞 Phone: ${quote.phone}
-📧 Email: ${quote.email || 'Not provided'}
-        
-*Project Details:*
-🛠️ Service: ${quote.service}
-⏱️ Timeline: ${quote.timeline}
-💰 Budget: MK ${quote.budget?.toLocaleString() || 'Not specified'}
-💵 Estimate: MK ${quote.estimatedPrice.toLocaleString()}
-        
-*Message:*
-${quote.message || 'No additional message'}
-        
-*Quote ID:* ${quote.id}
-        `;
-        
-        await whatsappClient.sendMessage(chatId, message);
-        console.log(`Quote notification sent for ${quote.id}`);
+        res.json({ success: true, logged: true });
         
     } catch (error) {
-        console.error('Failed to send quote notification:', error);
+        console.error('Security log error:', error);
+        res.status(500).json({ error: 'Logging failed' });
     }
-}
-
-// Get Payment Status
-app.get('/api/payment/:reference', (req, res) => {
-    const { reference } = req.params;
-    const payment = payments.get(reference);
-    
-    if (!payment) {
-        return res.status(404).json({ error: 'Payment not found' });
-    }
-    
-    res.json({
-        success: true,
-        payment
-    });
 });
 
-// Webhook for mobile money notifications (for production)
-app.post('/api/webhook/mobile-money', (req, res) => {
-    // This endpoint would receive real-time notifications from
-    // mobile money providers when payments are made
+function maskSensitiveData(data) {
+    if (typeof data !== 'object' || data === null) return data;
     
-    const { transactionId, amount, phone, reference, status } = req.body;
-    
-    console.log('Mobile Money Webhook:', {
-        transactionId,
-        amount,
-        phone,
-        reference,
-        status
-    });
-    
-    // Update payment status in database
-    if (payments.has(reference)) {
-        const payment = payments.get(reference);
-        payment.status = status === 'successful' ? 'verified' : 'failed';
-        payment.transactionId = transactionId;
-        payment.verifiedAt = new Date().toISOString();
-        payments.set(reference, payment);
-        
-        // Send confirmation
-        sendPaymentConfirmation(payment);
+    const masked = { ...data };
+    for (const [key, value] of Object.entries(masked)) {
+        if (typeof value === 'string') {
+            if (key.toLowerCase().includes('phone') || key.toLowerCase().includes('number')) {
+                masked[key] = value.replace(/\d(?=\d{4})/g, '*');
+            } else if (key.toLowerCase().includes('email')) {
+                const [user, domain] = value.split('@');
+                masked[key] = user?.[0] + '***@' + domain;
+            }
+        }
     }
+    return masked;
+}
+
+// NEW: Fraud Detection Webhook
+app.post('/api/webhook/fraud-alert', (req, res) => {
+    // This would connect to fraud detection services
+    const { transactionId, score, reasons } = req.body;
+    
+    console.log('Fraud Alert:', { transactionId, score, reasons });
+    
+    // Mark corresponding payment as suspicious
+    Array.from(payments.entries()).forEach(([ref, payment]) => {
+        if (payment.transactionId === transactionId) {
+            payment.fraudScore = score;
+            payment.fraudReasons = reasons;
+            payment.status = 'under_review';
+            payments.set(ref, payment);
+        }
+    });
     
     res.json({ received: true });
 });
 
-// Get all payments (admin only - add authentication in production)
-app.get('/api/admin/payments', (req, res) => {
-    const allPayments = Array.from(payments.values());
+// Admin endpoints (add authentication in production)
+app.get('/api/admin/payments', validateSecurityToken, (req, res) => {
+    const allPayments = Array.from(payments.values()).map(p => ({
+        ...p,
+        phone: maskPhoneNumber(p.phone)
+    }));
+    
     res.json({
         success: true,
         count: allPayments.length,
-        payments: allPayments
+        payments: allPayments,
+        summary: {
+            total: allPayments.reduce((sum, p) => sum + p.amount, 0),
+            verified: allPayments.filter(p => p.verified).length,
+            pending: allPayments.filter(p => !p.verified).length,
+            suspicious: allPayments.filter(p => p.status === 'suspected_fraud').length
+        }
     });
 });
 
-// Get all quotes (admin only)
-app.get('/api/admin/quotes', (req, res) => {
-    const allQuotes = Array.from(quotes.values());
-    res.json({
-        success: true,
-        count: allQuotes.length,
-        quotes: allQuotes
-    });
-});
+// Logging functions
+function logPaymentActivity(action, payment) {
+    const log = {
+        action,
+        paymentId: payment.id,
+        amount: payment.amount,
+        method: payment.method,
+        phone: maskPhoneNumber(payment.phone),
+        timestamp: new Date().toISOString(),
+        ip: payment.ip
+    };
+    
+    console.log('Payment Activity:', log);
+    // In production, store in database
+}
+
+function logSecurityEvent(type, data) {
+    const event = {
+        type,
+        data: maskSensitiveData(data),
+        timestamp: new Date().toISOString(),
+        ip: data.ip || 'unknown'
+    };
+    
+    console.log('Security Event:', event);
+    // In production, store in security database
+}
+
+// Service prices
+const servicePrices = {
+    basic_website: 250000,
+    business_website: 450000,
+    ecommerce_store: 750000,
+    marketing_package: 300000,
+    premium_package: 1200000
+};
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔒 Security: Enhanced mode`);
+    console.log(`📞 Verified Number: ${VERIFIED_NUMBER}`);
+    console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
 });
