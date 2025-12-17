@@ -3,7 +3,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const QRCode = require('qrcode');
-const { Client, LocalAuth } = require('whatsapp-web.js');
 require('dotenv').config();
 
 const app = express();
@@ -33,7 +32,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-    origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:8080'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Security-Token']
@@ -43,7 +42,9 @@ app.use(cors({
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // Limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false
 });
 app.use('/api/', limiter);
 
@@ -55,36 +56,22 @@ const payments = new Map();
 const quotes = new Map();
 const sessions = new Map();
 
-// WhatsApp Client
+// WhatsApp Client (Optional - only initialize if enabled)
 let whatsappClient = null;
-const VERIFIED_NUMBER = '2650991268040';
+const VERIFIED_NUMBER = process.env.VERIFIED_NUMBER || '2650991268040';
 
-// Initialize WhatsApp
-if (process.env.WHATSAPP_ENABLED === 'true') {
-    whatsappClient = new Client({
-        authStrategy: new LocalAuth(),
-        puppeteer: {
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        }
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'healthy',
+        service: 'Hepeco Digital API',
+        whatsapp: whatsappClient ? 'connected' : 'disabled',
+        verified_number: VERIFIED_NUMBER,
+        security: 'enhanced',
+        timestamp: new Date().toISOString(),
+        version: '2.0.0'
     });
-
-    whatsappClient.on('qr', (qr) => {
-        console.log('WhatsApp QR Code generated');
-        // Store for admin if needed
-    });
-
-    whatsappClient.on('ready', () => {
-        console.log('WhatsApp Client is ready!');
-        console.log('Verified number:', VERIFIED_NUMBER);
-    });
-
-    whatsappClient.on('auth_failure', (msg) => {
-        console.error('WhatsApp Auth Failure:', msg);
-    });
-
-    whatsappClient.initialize();
-}
+});
 
 // Security middleware
 const validateSecurityToken = (req, res, next) => {
@@ -120,18 +107,6 @@ const generateSecurityToken = (timestamp) => {
     }
     return Math.abs(hash).toString(36);
 };
-
-// Health check with security info
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        service: 'Hepeco Digital API',
-        whatsapp: whatsappClient ? 'connected' : 'disabled',
-        verified_number: VERIFIED_NUMBER,
-        security: 'enhanced',
-        timestamp: new Date().toISOString()
-    });
-});
 
 // Generate Secure Payment Reference
 app.post('/api/payment/generate', validateSecurityToken, (req, res) => {
@@ -175,7 +150,7 @@ app.post('/api/payment/generate', validateSecurityToken, (req, res) => {
         };
         
         payments.set(reference, payment);
-        payments.set(requestKey, { timestamp: Date.now() }); // Store request to prevent duplicates
+        payments.set(requestKey, { timestamp: Date.now() });
         
         // Generate QR code data
         let qrData = '';
@@ -205,6 +180,7 @@ app.post('/api/payment/generate', validateSecurityToken, (req, res) => {
         // Generate QR code
         QRCode.toDataURL(qrData, (err, qrUrl) => {
             if (err) {
+                console.error('QR generation error:', err);
                 return res.status(500).json({ error: 'Failed to generate QR code' });
             }
             
@@ -341,9 +317,14 @@ app.post('/api/payment/verify', validateSecurityToken, async (req, res) => {
             // Create invoice
             const invoice = generateInvoice(payment);
             
-            // Send WhatsApp confirmation
+            // Send WhatsApp confirmation if enabled
             if (whatsappClient && phone) {
-                await sendEnhancedWhatsAppConfirmation(phone, payment, invoice);
+                try {
+                    await sendWhatsAppConfirmation(phone, payment, invoice);
+                } catch (whatsappError) {
+                    console.error('WhatsApp sending error:', whatsappError);
+                    // Continue even if WhatsApp fails
+                }
             }
             
             // Log successful verification
@@ -454,65 +435,14 @@ function checkForFraudPatterns(payment) {
     return flags;
 }
 
-async function sendEnhancedWhatsAppConfirmation(phone, payment, invoice) {
-    try {
-        const formattedPhone = phone.replace(/\D/g, '');
-        const chatId = `${formattedPhone}@c.us`;
-        
-        const message = `
-✅ *PAYMENT CONFIRMED - HEPECO DIGITAL*
-
-*Payment Details:*
-📊 Reference: ${payment.id}
-💰 Amount: MK ${payment.amount.toLocaleString()}
-💳 Method: ${payment.method}
-📅 Date: ${new Date(payment.verifiedAt).toLocaleDateString()}
-🆔 Verification: ${payment.verificationId}
-
-*Invoice Summary:*
-📋 Invoice: ${invoice.invoiceNumber}
-🛠️ Service: ${invoice.items[0].description}
-💵 Total: MK ${invoice.total.toLocaleString()}
-
-*Next Steps:*
-1. Our project manager will contact you within 24 hours
-2. You'll receive access to your client portal
-3. Project kickoff meeting will be scheduled
-
-*Security Notice:*
-🔒 This is an automated confirmation from Hepeco Digital
-📞 Only communicate with us at +265 99 126 8040
-⚠️ Never share your verification codes
-
-For questions, reply to this message or call +265 99 126 8040.
-
-Thank you for choosing Hepeco Digital!
-        `;
-        
-        await whatsappClient.sendMessage(chatId, message);
-        
-        // Send invoice as follow-up
-        const invoiceMessage = `
-*Invoice Details:*
-${invoice.items.map(item => `• ${item.description}: MK ${item.amount.toLocaleString()}`).join('\n')}
-
-Total: MK ${invoice.total.toLocaleString()}
-Status: PAID
-Due: Immediately
-
-Terms: 50% deposit, balance on project completion
-        `;
-        
-        setTimeout(async () => {
-            await whatsappClient.sendMessage(chatId, invoiceMessage);
-        }, 1000);
-        
-        console.log(`Enhanced WhatsApp confirmation sent to ${maskPhoneNumber(phone)}`);
-        
-    } catch (error) {
-        console.error('Failed to send WhatsApp confirmation:', error);
-        logSecurityEvent('whatsapp_send_error', { phone: maskPhoneNumber(phone), error: error.message });
-    }
+async function sendWhatsAppConfirmation(phone, payment, invoice) {
+    // This is a simplified version without actual WhatsApp Web
+    // In production, use a proper WhatsApp Business API
+    
+    console.log(`WhatsApp confirmation would be sent to: ${maskPhoneNumber(phone)}`);
+    console.log(`Invoice: ${invoice.invoiceNumber}, Amount: ${payment.amount}`);
+    
+    return true;
 }
 
 function generateInvoice(payment) {
@@ -707,8 +637,23 @@ const servicePrices = {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🔒 Security: Enhanced mode`);
-    console.log(`📞 Verified Number: ${VERIFIED_NUMBER}`);
-    console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`
+    🚀 Server running on port ${PORT}
+    🔒 Security: Enhanced mode
+    📞 Verified Number: ${VERIFIED_NUMBER}
+    🌐 Health check: http://localhost:${PORT}/api/health
+    ⚡ Mode: Production Ready
+    📦 Version: 2.0.0
+    `);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down gracefully...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received. Shutting down...');
+    process.exit(0);
 });
