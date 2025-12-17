@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hepeco Digital - Professional Websites & Digital Solutions</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+</head>
+<body>
+    <!-- Floating WhatsApp Button -->
+    <div class="whatsapp-float">
+        <a href="https://wa.me/265991234567?text=Hello%20Hepeco%20Digital%21%20I%20need%20help%20with%20my%20website" target="_blank" class="whatsapp-btn">
+            <i class="fab fa-whatsapp"></i>
+            <span class="whatsapp-text">Chat with us</span>
+        </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">H</span>
+                <span class="logo-text">HEPECO<span class="logo-highlight">Digital</span></span>
+            </div>
+            <div class="nav-actions">
+                <a href="tel:+265991234567" class="call-btn">
+                    <i class="fas fa-phone"></i>
+                    <span>Call Now</span>
+                </a>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Professional Websites & <span class="highlight">Digital Growth</span> for Businesses</h1>
+                <p class="hero-subtitle">We build fast, beautiful websites and handle your digital marketing. Everything you need to succeed online.</p>
+                
+                <div class="hero-cta">
+                    <button class="btn-primary" id="whatsappChat">
+                        <i class="fab fa-whatsapp"></i> Start on WhatsApp
+                    </button>
+                    <button class="btn-secondary" id="showQuote">Get Instant Quote</button>
+                </div>
+
+                <div class="trust-badges">
+                    <div class="badge">
+                        <i class="fas fa-clock"></i>
+                        <span>24/7 Support</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>6 Months Warranty</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-bolt"></i>
+                        <span>14-Day Delivery</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="mockup-content">
+                        <div class="stat">
+                            <div class="stat-number">+150</div>
+                            <div class="stat-label">Projects Delivered</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Client Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <h2 class="section-title">What We <span class="highlight">Do Best</span></h2>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Website Development</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Responsive Design</li>
+                        <li><i class="fas fa-check"></i> Fast Loading</li>
+                        <li><i class="fas fa-check"></i> SEO Optimized</li>
+                        <li><i class="fas fa-check"></i> Easy to Update</li>
+                    </ul>
+                    <button class="service-btn" data-service="website">Get Quote</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3>E-commerce Stores</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Product Management</li>
+                        <li><i class="fas fa-check"></i> Secure Payments</li>
+                        <li><i class="fas fa-check"></i> Order Tracking</li>
+                        <li><i class="fas fa-check"></i> Inventory System</li>
+                    </ul>
+                    <button class="service-btn" data-service="ecommerce">Get Quote</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Digital Marketing</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Social Media Ads</li>
+                        <li><i class="fas fa-check"></i> Google Ads</li>
+                        <li><i class="fas fa-check"></i> Content Creation</li>
+                        <li><i class="fas fa-check"></i> Performance Reports</li>
+                    </ul>
+                    <button class="service-btn" data-service="marketing">Get Quote</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment & Quote Section -->
+    <section class="payment-section" id="quote">
+        <div class="container">
+            <h2 class="section-title">Easy Payments & <span class="highlight">Instant Quotes</span></h2>
+            
+            <div class="payment-wrapper">
+                <!-- Quote Calculator -->
+                <div class="quote-box">
+                    <h3><i class="fas fa-calculator"></i> Project Quote Calculator</h3>
+                    
+                    <div class="form-group">
+                        <label>What do you need?</label>
+                        <select id="serviceType">
+                            <option value="">Select Service</option>
+                            <option value="basic_website">Basic Website (5 pages)</option>
+                            <option value="business_website">Business Website (10 pages)</option>
+                            <option value="ecommerce_store">E-commerce Store</option>
+                            <option value="marketing_package">Digital Marketing Package</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Timeline</label>
+                        <select id="timeline">
+                            <option value="14">Standard (14 days)</option>
+                            <option value="7">Fast (7 days) +25%</option>
+                            <option value="3">Urgent (3 days) +50%</option>
+                        </select>
+                    </div>
+
+                    <div class="quote-summary">
+                        <div class="quote-item">
+                            <span>Service Cost:</span>
+                            <span id="serviceCost">MK 0</span>
+                        </div>
+                        <div class="quote-item">
+                            <span>Timeline Fee:</span>
+                            <span id="timelineFee">MK 0</span>
+                        </div>
+                        <div class="quote-item total">
+                            <span>Total:</span>
+                            <span id="totalCost">MK 0</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="proceedPayment">Proceed to Payment</button>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <h3><i class="fas fa-wallet"></i> Pay with Mobile Money</h3>
+                    
+                    <div class="payment-options">
+                        <div class="payment-option active" data-method="mpamba">
+                            <div class="payment-logo">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>Mpamba</h4>
+                                <p>Pay instantly with Mpamba</p>
+                            </div>
+                            <div class="payment-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+
+                        <div class="payment-option" data-method="airtel">
+                            <div class="payment-logo">
+                                <i class="fas fa-signal"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>Airtel Money</h4>
+                                <p>Secure Airtel Money payment</p>
+                            </div>
+                            <div class="payment-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+
+                        <div class="payment-option" data-method="bank">
+                            <div class="payment-logo">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>Bank Transfer</h4>
+                                <p>Transfer to our bank account</p>
+                            </div>
+                            <div class="payment-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <div class="payment-form" id="paymentForm">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phoneNumber" placeholder="Enter phone number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Amount (MK)</label>
+                            <input type="number" id="amount" placeholder="Enter amount" readonly>
+                        </div>
+
+                        <div class="payment-instructions">
+                            <h4><i class="fas fa-info-circle"></i> Payment Instructions:</h4>
+                            <p id="mpambaInstructions" class="instructions">
+                                1. Dial *444#<br>
+                                2. Select "Send Money"<br>
+                                3. Enter number: <strong>099 123 4567</strong><br>
+                                4. Enter amount<br>
+                                5. Enter reference: <strong id="mpambaRef">HEPECO001</strong>
+                            </p>
+                            <p id="airtelInstructions" class="instructions hidden">
+                                1. Dial *555#<br>
+                                2. Select "Send Money"<br>
+                                3. Enter number: <strong>088 123 4567</strong><br>
+                                4. Enter amount<br>
+                                5. Enter reference: <strong id="airtelRef">HEPECO001</strong>
+                            </p>
+                            <p id="bankInstructions" class="instructions hidden">
+                                <strong>Bank Details:</strong><br>
+                                Bank: National Bank<br>
+                                Account: Hepeco Digital Systems<br>
+                                Account No: 1001234567<br>
+                                Branch: Lilongwe<br>
+                                Reference: <strong id="bankRef">HEPECO001</strong>
+                            </p>
+                        </div>
+
+                        <div class="payment-actions">
+                            <button class="btn-primary" id="generatePayment">
+                                <i class="fas fa-qrcode"></i> Generate Payment
+                            </button>
+                            <button class="btn-secondary" id="verifyPayment">
+                                <i class="fas fa-check-circle"></i> Verify Payment
+                            </button>
+                        </div>
+
+                        <div id="paymentStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us <span class="highlight">Any Time</span></h2>
+            
+            <div class="contact-grid">
+                <div class="contact-method">
+                    <div class="contact-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3>WhatsApp Business</h3>
+                    <p>Chat instantly with our team</p>
+                    <a href="https://wa.me/265991234567?text=Hello%20Hepeco%20Digital%21%20I%20need%20a%20website" class="contact-link" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Open Chat
+                    </a>
+                    <div class="contact-features">
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Support</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-paperclip"></i>
+                            <span>Send Files</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-comments"></i>
+                            <span>Quick Replies</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-icon call">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3>Call Us Directly</h3>
+                    <p>Speak with our experts</p>
+                    <a href="tel:+265991234567" class="contact-link">
+                        <i class="fas fa-phone"></i> +265 991 234 567
+                    </a>
+                    <div class="contact-times">
+                        <div class="time">
+                            <i class="fas fa-clock"></i>
+                            <span>Mon-Fri: 8AM-6PM</span>
+                        </div>
+                        <div class="time">
+                            <i class="fas fa-clock"></i>
+                            <span>Sat: 9AM-2PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-icon email">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Us</h3>
+                    <p>For detailed inquiries</p>
+                    <a href="mailto:info@hepecodigital.com" class="contact-link">
+                        <i class="fas fa-envelope"></i> info@hepecodigital.com
+                    </a>
+                    <div class="response-info">
+                        <i class="fas fa-reply"></i>
+                        <span>Response within 2 hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Contact Form -->
+            <div class="quick-form">
+                <h3><i class="fas fa-bolt"></i> Quick Message</h3>
+                <div class="form-row">
+                    <input type="text" id="quickName" placeholder="Your Name">
+                    <input type="tel" id="quickPhone" placeholder="Phone Number">
+                    <select id="quickService">
+                        <option value="">I need help with...</option>
+                        <option value="website">Website Development</option>
+                        <option value="ecommerce">E-commerce Store</option>
+                        <option value="marketing">Digital Marketing</option>
+                        <option value="support">Technical Support</option>
+                    </select>
+                </div>
+                <textarea id="quickMessage" placeholder="Briefly describe your project..."></textarea>
+                <div class="form-actions">
+                    <button class="btn-primary" id="sendWhatsApp">
+                        <i class="fab fa-whatsapp"></i> Send via WhatsApp
+                    </button>
+                    <button class="btn-secondary" id="sendEmail">
+                        <i class="fas fa-envelope"></i> Send Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo">
+                        <span class="logo-icon">H</span>
+                        <span class="logo-text">HEPECO<span class="logo-highlight">Digital</span></span>
+                    </div>
+                    <p>Professional websites & digital solutions for growing businesses.</p>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <a href="tel:+265991234567"><i class="fas fa-phone"></i> +265 991 234 567</a>
+                    <a href="mailto:info@hepecodigital.com"><i class="fas fa-envelope"></i> info@hepecodigital.com</a>
+                    <a href="https://wa.me/265991234567" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Chat</a>
+                </div>
+
+                <div class="footer-payments">
+                    <h4>Payment Methods</h4>
+                    <div class="payment-icons">
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Mpamba</span>
+                        </div>
+                        <div class="payment-icon">
+                            <i class="fas fa-signal"></i>
+                            <span>Airtel Money</span>
+                        </div>
+                        <div class="payment-icon">
+                            <i class="fas fa-university"></i>
+                            <span>Bank Transfer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Hepeco Digital Systems. All rights reserved.</p>
+                <p>Lilongwe, Malawi</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- QR Code Modal -->
+    <div class="modal" id="qrModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-qrcode"></i> Scan to Pay</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="qrcode"></div>
+                <div class="payment-details">
+                    <p><strong>Amount:</strong> <span id="modalAmount">MK 0</span></p>
+                    <p><strong>Reference:</strong> <span id="modalRef">HEPECO001</span></p>
+                    <p><strong>Pay to:</strong> <span id="modalAccount">099 123 4567</span></p>
+                </div>
+                <p class="modal-note"><i class="fas fa-info-circle"></i> Scan QR code with your mobile money app</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
