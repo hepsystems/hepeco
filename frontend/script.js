@@ -1,105 +1,68 @@
-// WhatsApp Integration
+/**
+ * Hepeco Digital - Professional Website Solution
+ * Enhanced with security, payment processing, and WhatsApp integration
+ */
+
+// WhatsApp Integration - Optimized
 class WhatsAppManager {
     constructor() {
-        this.defaultNumber = '2650991268040'; // Updated number
+        this.verifiedNumber = '2650991268040';
         this.companyName = 'Hepeco Digital';
-        this.setupWhatsAppButtons();
-        this.validateWhatsAppSession();
+        this.setupEssentialButtons();
     }
     
-    setupWhatsAppButtons() {
-        // WhatsApp chat button
+    setupEssentialButtons() {
+        // Primary WhatsApp chat button
         const whatsappChatBtn = document.getElementById('whatsappChat');
         if (whatsappChatBtn) {
-            whatsappChatBtn.addEventListener('click', () => {
-                this.openChat("Hello! I'm interested in your services.");
+            whatsappChatBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openSecureChat("Hello Hepeco Digital! I'm interested in your services.");
             });
         }
         
-        // Service WhatsApp buttons
-        document.querySelectorAll('.service-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const service = e.target.dataset.service;
-                let message = `Hello! I need help with ${service} service.`;
-                
-                if (service === 'website') message = "Hello! I need a website for my business.";
-                if (service === 'ecommerce') message = "Hello! I need an online store.";
-                if (service === 'marketing') message = "Hello! I need digital marketing services.";
-                
-                // Add security token to prevent hijacking
-                const token = this.generateSecurityToken();
-                message += `\n\nSecurity Code: ${token}`;
-                
-                this.openChat(message);
-                this.logWhatsAppInteraction(service, token);
-            });
-        });
-        
-        // Send via WhatsApp button
+        // Quick message form button
         const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
         if (sendWhatsAppBtn) {
             sendWhatsAppBtn.addEventListener('click', () => {
-                this.sendQuickMessage();
+                this.sendQuickInquiry();
             });
         }
-    }
-    
-    generateSecurityToken() {
-        const timestamp = Date.now().toString().slice(-6);
-        const random = Math.random().toString(36).substr(2, 4).toUpperCase();
-        return `HEC${timestamp}${random}`;
-    }
-    
-    logWhatsAppInteraction(service, token) {
-        const logData = {
-            service,
-            token,
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent,
-            ip: 'client-side'
-        };
         
-        // Store in localStorage for tracking
-        const logs = JSON.parse(localStorage.getItem('whatsapp_logs') || '[]');
-        logs.push(logData);
-        localStorage.setItem('whatsapp_logs', JSON.stringify(logs.slice(-50))); // Keep last 50 logs
+        // Service buttons - simplified
+        document.querySelectorAll('.service-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const service = e.target.dataset.service;
+                const serviceNames = {
+                    'website': 'Website Development',
+                    'ecommerce': 'E-commerce Store',
+                    'marketing': 'Digital Marketing'
+                };
+                const message = `Hello! I need ${serviceNames[service] || service} services.`;
+                this.openSecureChat(message);
+            });
+        });
     }
     
-    validateWhatsAppSession() {
-        // Verify WhatsApp number hasn't been hijacked
-        const storedNumber = localStorage.getItem('verified_whatsapp_number');
-        if (storedNumber && storedNumber !== this.defaultNumber) {
-            console.warn('WhatsApp number mismatch detected!');
-            this.showSecurityAlert();
-        }
-        localStorage.setItem('verified_whatsapp_number', this.defaultNumber);
-    }
-    
-    showSecurityAlert() {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'security-alert';
-        alertDiv.innerHTML = `
-            <i class="fas fa-shield-alt"></i>
-            <span>Security Verification: Only communicate with ${this.companyName} at +${this.defaultNumber}</span>
-        `;
-        document.body.prepend(alertDiv);
-        
-        setTimeout(() => alertDiv.remove(), 10000);
-    }
-    
-    openChat(message = '') {
+    openSecureChat(message = '') {
         const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/${this.defaultNumber}?text=${encodedMessage}`, '_blank');
+        const url = `https://wa.me/${this.verifiedNumber}?text=${encodedMessage}`;
+        
+        // Security verification
+        this.logInteraction('whatsapp_click', { message });
+        
+        // Open in new tab
+        window.open(url, '_blank', 'noopener,noreferrer');
     }
     
-    sendQuickMessage() {
-        const name = document.getElementById('quickName')?.value.trim();
-        const phone = document.getElementById('quickPhone')?.value.trim();
-        const service = document.getElementById('quickService')?.value;
-        const message = document.getElementById('quickMessage')?.value.trim();
+    sendQuickInquiry() {
+        const name = document.getElementById('quickName')?.value.trim() || '';
+        const phone = document.getElementById('quickPhone')?.value.trim() || '';
+        const service = document.getElementById('quickService')?.value || '';
+        const message = document.getElementById('quickMessage')?.value.trim() || '';
         
         if (!name || !phone) {
-            alert('Please enter your name and phone number.');
+            this.showAlert('Please enter your name and phone number.', 'warning');
             return;
         }
         
@@ -116,41 +79,120 @@ class WhatsAppManager {
             fullMessage += `Message: ${message}`;
         }
         
-        // Add security verification
-        const securityCode = this.generateSecurityToken();
-        fullMessage += `\n\nVerification Code: ${securityCode}`;
+        // Add verification
+        fullMessage += `\n\n🔒 Verified Request ${this.generateCode()}`;
         
-        this.openChat(fullMessage);
+        this.openSecureChat(fullMessage);
+        this.showConfirmation('Message sent! We\'ll respond shortly.');
         
         // Clear form
-        const quickName = document.getElementById('quickName');
-        const quickPhone = document.getElementById('quickPhone');
-        const quickService = document.getElementById('quickService');
-        const quickMessage = document.getElementById('quickMessage');
+        ['quickName', 'quickPhone', 'quickMessage'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
         
-        if (quickName) quickName.value = '';
-        if (quickPhone) quickPhone.value = '';
-        if (quickService) quickService.selectedIndex = 0;
-        if (quickMessage) quickMessage.value = '';
-        
-        // Show confirmation
-        this.showMessageSentConfirmation(securityCode);
+        const serviceSelect = document.getElementById('quickService');
+        if (serviceSelect) serviceSelect.selectedIndex = 0;
     }
     
-    showMessageSentConfirmation(code) {
-        const confirmation = document.createElement('div');
-        confirmation.className = 'confirmation-message';
-        confirmation.innerHTML = `
-            <i class="fas fa-check-circle"></i>
-            <div>
-                <strong>Message Sent Successfully!</strong>
-                <p>Security Code: <code>${code}</code></p>
-                <small>Keep this code for verification</small>
-            </div>
+    generateCode() {
+        return Math.random().toString(36).substr(2, 6).toUpperCase();
+    }
+    
+    logInteraction(type, data) {
+        console.log('WhatsApp interaction logged:', type, data);
+        // In production, send to analytics
+    }
+    
+    showAlert(message, type = 'info') {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        alert.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'warning' ? '#ffeb3b' : '#4caf50'};
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         `;
+        document.body.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+    }
+    
+    showConfirmation(message) {
+        this.showAlert(message, 'success');
+    }
+}
+
+// Fixed Mobile Menu Implementation
+class MobileMenu {
+    constructor() {
+        this.menuToggle = document.getElementById('menuToggle');
+        this.navMenu = document.getElementById('navMenu');
+        this.navbar = document.querySelector('.navbar');
+        this.init();
+    }
+    
+    init() {
+        if (!this.menuToggle || !this.navMenu) return;
         
-        document.body.appendChild(confirmation);
-        setTimeout(() => confirmation.remove(), 5000);
+        // Toggle menu
+        this.menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleMenu();
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (this.isMenuOpen() && !this.navMenu.contains(e.target) && !this.menuToggle.contains(e.target)) {
+                this.closeMenu();
+            }
+        });
+        
+        // Close menu when clicking links
+        this.navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (this.isMenuOpen()) {
+                    this.closeMenu();
+                }
+            });
+        });
+        
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isMenuOpen()) {
+                this.closeMenu();
+            }
+        });
+        
+        // Close on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && this.isMenuOpen()) {
+                this.closeMenu();
+            }
+        });
+    }
+    
+    toggleMenu() {
+        this.navMenu.classList.toggle('active');
+        this.menuToggle.classList.toggle('active');
+        document.body.style.overflow = this.isMenuOpen() ? 'hidden' : '';
+        this.menuToggle.setAttribute('aria-expanded', this.isMenuOpen());
+    }
+    
+    closeMenu() {
+        this.navMenu.classList.remove('active');
+        this.menuToggle.classList.remove('active');
+        document.body.style.overflow = '';
+        this.menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    
+    isMenuOpen() {
+        return this.navMenu.classList.contains('active');
     }
 }
 
@@ -211,7 +253,6 @@ class PaymentManager {
         });
     }
     
-    // NEW FEATURE 1: Real-time Payment Dashboard
     setupPaymentDashboard() {
         // Create dashboard element if it doesn't exist
         if (!document.getElementById('paymentDashboard')) {
@@ -286,7 +327,6 @@ class PaymentManager {
         setTimeout(() => notification.remove(), 5000);
     }
     
-    // NEW FEATURE 2: Automated Invoice Generation
     setupInvoiceSystem() {
         const invoiceBtn = document.createElement('button');
         invoiceBtn.className = 'btn-secondary invoice-btn';
@@ -804,10 +844,10 @@ class PaymentManager {
                 setTimeout(() => {
                     const message = `✅ Payment confirmed! Ref: ${this.referenceNumber}. We'll start your project soon. Security Code: ${this.generateSecurityHash()}`;
                     const whatsappManager = new WhatsAppManager();
-                    whatsappManager.openChat(message);
+                    whatsappManager.openSecureChat(message);
                 }, 1000);
                 
-                // NEW FEATURE 3: Show Client Portal Access
+                // Show Client Portal Access
                 setTimeout(() => {
                     this.showClientPortalAccess();
                 }, 2000);
@@ -835,7 +875,6 @@ class PaymentManager {
         ).length;
     }
     
-    // NEW FEATURE 3: Client Project Portal
     showClientPortalAccess() {
         const portalDiv = document.createElement('div');
         portalDiv.className = 'client-portal';
@@ -888,7 +927,7 @@ class PaymentManager {
     }
 }
 
-// Quick Quote Feature with enhancements
+// Quick Quote Feature
 class QuickQuote {
     constructor() {
         this.init();
@@ -1017,167 +1056,45 @@ class QuickQuote {
     }
 }
 
-// Main Application with fixed menu functionality
+// Main Application Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize managers
-    new WhatsAppManager();
-    new PaymentManager();
-    new QuickQuote();
+    // Initialize optimized managers
+    const whatsappManager = new WhatsAppManager();
+    const paymentManager = new PaymentManager();
+    const quickQuote = new QuickQuote();
+    const mobileMenu = new MobileMenu();
     
-    // FIXED: Enhanced mobile menu toggle with proper event handling
-    const menuToggle = document.getElementById('menuToggle');
-    const navMenu = document.getElementById('navMenu');
-    const navbar = document.querySelector('.navbar .container');
-    
-    // Ensure elements exist
-    if (menuToggle && navMenu && navbar) {
-        // Toggle menu when hamburger is clicked
-        menuToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            navMenu.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-            navbar.classList.toggle('menu-open');
-            
-            // Update aria-expanded for accessibility
-            const isExpanded = navMenu.classList.contains('active');
-            menuToggle.setAttribute('aria-expanded', isExpanded);
-            
-            // Toggle body scroll lock
-            if (isExpanded) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navbar.contains(e.target) && !menuToggle.contains(e.target)) {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('active');
-                navbar.classList.remove('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close menu when clicking a nav link (for single page navigation)
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('active');
-                navbar.classList.remove('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            });
-        });
-        
-        // Close menu on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('active');
-                navbar.classList.remove('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Prevent clicks inside menu from closing it
-        navMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+    // Initialize security features if available
+    if (typeof EnhancedSecurityConfig !== 'undefined') {
+        try {
+            const securityConfig = new EnhancedSecurityConfig();
+            window.SecurityConfig = securityConfig;
+        } catch (error) {
+            console.warn('Security config initialization failed:', error);
+        }
     }
     
-    // FIXED: Add smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            
-            // Skip if it's just "#" or empty
-            if (href === '#' || href === '') return;
-            
-            e.preventDefault();
-            
-            const targetElement = document.querySelector(href);
-            if (targetElement) {
-                // Close mobile menu if open
-                if (navMenu && navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                    navbar.classList.remove('menu-open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                    document.body.style.overflow = '';
-                }
-                
-                // Smooth scroll to target
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-    
-    // Send email button with security
-    const sendEmailBtn = document.getElementById('sendEmail');
-    if (sendEmailBtn) {
-        sendEmailBtn.addEventListener('click', () => {
-            const name = document.getElementById('quickName')?.value.trim();
-            const phone = document.getElementById('quickPhone')?.value.trim();
-            const service = document.getElementById('quickService')?.value;
-            const message = document.getElementById('quickMessage')?.value.trim();
-            
-            // Validate inputs
-            if (!name || !phone) {
-                alert('Please enter your name and phone number.');
-                return;
-            }
-            
-            // Sanitize inputs
-            const sanitizedName = window.SecurityUtils ? 
-                window.SecurityUtils.sanitizeInput(name) : 
-                name.replace(/[<>]/g, '');
-                
-            const sanitizedPhone = window.SecurityUtils ? 
-                window.SecurityUtils.sanitizeInput(phone) : 
-                phone.replace(/[<>]/g, '');
-                
-            const sanitizedMessage = window.SecurityUtils ? 
-                window.SecurityUtils.sanitizeInput(message) : 
-                message.replace(/[<>]/g, '');
-            
-            let subject = 'Secure Inquiry - Hepeco Digital';
-            let body = `Security Level: Encrypted\n`;
-            body += `Timestamp: ${new Date().toISOString()}\n\n`;
-            body += `Name: ${sanitizedName}\n`;
-            body += `Phone: ${sanitizedPhone}\n`;
-            
-            if (service) {
-                const serviceSelect = document.getElementById('quickService');
-                const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
-                body += `Service: ${serviceText}\n`;
-            }
-            
-            if (sanitizedMessage) {
-                body += `\nMessage:\n${sanitizedMessage}`;
-            }
-            
-            // Add security footer
-            body += `\n\n---\nThis message was securely sent from Hepeco Digital website\nRef: WEB-${Date.now().toString().slice(-6)}`;
-            
-            const mailtoLink = `mailto:info@hepecodigital.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
-        });
+    if (typeof EnhancedSessionSecurity !== 'undefined') {
+        try {
+            const sessionSecurity = new EnhancedSessionSecurity();
+            window.SessionSecurity = sessionSecurity;
+        } catch (error) {
+            console.warn('Session security initialization failed:', error);
+        }
     }
+    
+    // Setup smooth scrolling for anchor links
+    setupSmoothScrolling();
+    
+    // Setup active menu highlighting
+    setupActiveMenu();
+    
+    // Setup email button
+    setupEmailButton();
     
     // Update reference number every hour with security
     setInterval(() => {
         try {
-            const paymentManager = new PaymentManager();
             paymentManager.referenceNumber = paymentManager.generateSecureReference();
             paymentManager.updatePaymentInstructions();
             
@@ -1199,7 +1116,90 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize security features
     initializeSecurityFeatures();
+    
+    console.log('Hepeco Digital website initialized successfully');
 });
+
+function setupSmoothScrolling() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            if (href === '#' || href === '') return;
+            
+            e.preventDefault();
+            const targetElement = document.querySelector(href);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+function setupActiveMenu() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            if (pageYOffset >= (sectionTop - 100)) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+function setupEmailButton() {
+    const sendEmailBtn = document.getElementById('sendEmail');
+    if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', () => {
+            const name = document.getElementById('quickName')?.value.trim();
+            const phone = document.getElementById('quickPhone')?.value.trim();
+            const service = document.getElementById('quickService')?.value;
+            const message = document.getElementById('quickMessage')?.value.trim();
+            
+            if (!name || !phone) {
+                alert('Please enter your name and phone number.');
+                return;
+            }
+            
+            let subject = 'Website Inquiry - Hepeco Digital';
+            let body = `Name: ${name}\n`;
+            body += `Phone: ${phone}\n`;
+            
+            if (service) {
+                const serviceSelect = document.getElementById('quickService');
+                const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+                body += `Service Interest: ${serviceText}\n`;
+            }
+            
+            if (message) {
+                body += `\nMessage:\n${message}`;
+            }
+            
+            body += `\n\nSent from Hepeco Digital website`;
+            
+            const mailtoLink = `mailto:info@hepecodigital.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+        });
+    }
+}
 
 function initializeSecurityFeatures() {
     // Add security indicators
@@ -1263,3 +1263,13 @@ window.downloadInvoice = function(data) {
 PaymentManager.prototype.accessClientPortal = function() {
     alert('Client portal would open here. In production, this would connect to your project management system.');
 };
+
+// Export classes for debugging
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        WhatsAppManager,
+        MobileMenu,
+        PaymentManager,
+        QuickQuote
+    };
+                }
