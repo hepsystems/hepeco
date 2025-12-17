@@ -9,9 +9,12 @@ class WhatsAppManager {
     
     setupWhatsAppButtons() {
         // WhatsApp chat button
-        document.getElementById('whatsappChat').addEventListener('click', () => {
-            this.openChat("Hello! I'm interested in your services.");
-        });
+        const whatsappChatBtn = document.getElementById('whatsappChat');
+        if (whatsappChatBtn) {
+            whatsappChatBtn.addEventListener('click', () => {
+                this.openChat("Hello! I'm interested in your services.");
+            });
+        }
         
         // Service WhatsApp buttons
         document.querySelectorAll('.service-btn').forEach(btn => {
@@ -33,9 +36,12 @@ class WhatsAppManager {
         });
         
         // Send via WhatsApp button
-        document.getElementById('sendWhatsApp').addEventListener('click', () => {
-            this.sendQuickMessage();
-        });
+        const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
+        if (sendWhatsAppBtn) {
+            sendWhatsAppBtn.addEventListener('click', () => {
+                this.sendQuickMessage();
+            });
+        }
     }
     
     generateSecurityToken() {
@@ -87,10 +93,10 @@ class WhatsAppManager {
     }
     
     sendQuickMessage() {
-        const name = document.getElementById('quickName').value.trim();
-        const phone = document.getElementById('quickPhone').value.trim();
-        const service = document.getElementById('quickService').value;
-        const message = document.getElementById('quickMessage').value.trim();
+        const name = document.getElementById('quickName')?.value.trim();
+        const phone = document.getElementById('quickPhone')?.value.trim();
+        const service = document.getElementById('quickService')?.value;
+        const message = document.getElementById('quickMessage')?.value.trim();
         
         if (!name || !phone) {
             alert('Please enter your name and phone number.');
@@ -101,7 +107,8 @@ class WhatsAppManager {
         fullMessage += `Phone: ${phone}\n`;
         
         if (service) {
-            const serviceText = document.getElementById('quickService').options[document.getElementById('quickService').selectedIndex].text;
+            const serviceSelect = document.getElementById('quickService');
+            const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
             fullMessage += `Service: ${serviceText}\n`;
         }
         
@@ -116,10 +123,15 @@ class WhatsAppManager {
         this.openChat(fullMessage);
         
         // Clear form
-        document.getElementById('quickName').value = '';
-        document.getElementById('quickPhone').value = '';
-        document.getElementById('quickService').selectedIndex = 0;
-        document.getElementById('quickMessage').value = '';
+        const quickName = document.getElementById('quickName');
+        const quickPhone = document.getElementById('quickPhone');
+        const quickService = document.getElementById('quickService');
+        const quickMessage = document.getElementById('quickMessage');
+        
+        if (quickName) quickName.value = '';
+        if (quickPhone) quickPhone.value = '';
+        if (quickService) quickService.selectedIndex = 0;
+        if (quickMessage) quickMessage.value = '';
         
         // Show confirmation
         this.showMessageSentConfirmation(securityCode);
@@ -163,7 +175,9 @@ class PaymentManager {
     
     generateSecureReference() {
         const timestamp = Date.now().toString();
-        const random = window.crypto.getRandomValues(new Uint32Array(2))[0].toString(36);
+        const random = window.crypto?.getRandomValues ? 
+            window.crypto.getRandomValues(new Uint32Array(2))[0].toString(36) :
+            Math.random().toString(36).substr(2, 9);
         const hash = btoa(timestamp + random).replace(/[+/=]/g, '').slice(0, 12);
         return `HEC${hash.toUpperCase()}`;
     }
@@ -199,44 +213,46 @@ class PaymentManager {
     
     // NEW FEATURE 1: Real-time Payment Dashboard
     setupPaymentDashboard() {
+        // Create dashboard element if it doesn't exist
+        if (!document.getElementById('paymentDashboard')) {
+            const dashboard = document.createElement('div');
+            dashboard.id = 'paymentDashboard';
+            dashboard.className = 'payment-dashboard';
+            dashboard.innerHTML = `
+                <div class="dashboard-header">
+                    <h4><i class="fas fa-chart-line"></i> Payment Status</h4>
+                    <span class="dashboard-status" id="dashboardStatus">Active</span>
+                </div>
+                <div class="dashboard-content">
+                    <div class="dashboard-item">
+                        <span>Reference:</span>
+                        <strong id="dashboardRef">${this.referenceNumber}</strong>
+                    </div>
+                    <div class="dashboard-item">
+                        <span>Amount:</span>
+                        <strong id="dashboardAmount">MK 0</strong>
+                    </div>
+                    <div class="dashboard-item">
+                        <span>Status:</span>
+                        <span class="status-badge pending" id="dashboardPaymentStatus">Pending</span>
+                    </div>
+                    <div class="dashboard-item">
+                        <span>Last Check:</span>
+                        <span id="dashboardLastCheck">Just now</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add to payment section
+            const paymentSection = document.querySelector('.payment-form');
+            if (paymentSection) {
+                paymentSection.parentNode.insertBefore(dashboard, paymentSection.nextSibling);
+            }
+        }
+        
         this.dashboardUpdateInterval = setInterval(() => {
             this.updatePaymentStatus();
         }, 30000); // Update every 30 seconds
-        
-        // Create dashboard element
-        const dashboard = document.createElement('div');
-        dashboard.id = 'paymentDashboard';
-        dashboard.className = 'payment-dashboard';
-        dashboard.innerHTML = `
-            <div class="dashboard-header">
-                <h4><i class="fas fa-chart-line"></i> Payment Status</h4>
-                <span class="dashboard-status" id="dashboardStatus">Active</span>
-            </div>
-            <div class="dashboard-content">
-                <div class="dashboard-item">
-                    <span>Reference:</span>
-                    <strong id="dashboardRef">${this.referenceNumber}</strong>
-                </div>
-                <div class="dashboard-item">
-                    <span>Amount:</span>
-                    <strong id="dashboardAmount">MK 0</strong>
-                </div>
-                <div class="dashboard-item">
-                    <span>Status:</span>
-                    <span class="status-badge pending" id="dashboardPaymentStatus">Pending</span>
-                </div>
-                <div class="dashboard-item">
-                    <span>Last Check:</span>
-                    <span id="dashboardLastCheck">Just now</span>
-                </div>
-            </div>
-        `;
-        
-        // Add to payment section
-        const paymentSection = document.querySelector('.payment-form');
-        if (paymentSection) {
-            paymentSection.parentNode.insertBefore(dashboard, paymentSection.nextSibling);
-        }
     }
     
     updatePaymentStatus() {
@@ -248,7 +264,7 @@ class PaymentManager {
         }
         
         // Simulate status updates
-        if (Math.random() > 0.7 && status.textContent === 'Pending') {
+        if (Math.random() > 0.7 && status && status.textContent === 'Pending') {
             status.textContent = 'Verified';
             status.className = 'status-badge verified';
             this.showPaymentSuccessNotification();
@@ -277,7 +293,10 @@ class PaymentManager {
         invoiceBtn.innerHTML = '<i class="fas fa-file-invoice"></i> Generate Invoice';
         invoiceBtn.onclick = () => this.generateInvoice();
         
-        document.querySelector('.payment-actions').appendChild(invoiceBtn);
+        const paymentActions = document.querySelector('.payment-actions');
+        if (paymentActions) {
+            paymentActions.appendChild(invoiceBtn);
+        }
     }
     
     generateInvoice() {
@@ -287,15 +306,21 @@ class PaymentManager {
         }
         
         const serviceSelect = document.getElementById('serviceType');
-        const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
         const timelineSelect = document.getElementById('timeline');
+        
+        if (!serviceSelect || !timelineSelect) {
+            alert('Please select a service first.');
+            return;
+        }
+        
+        const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
         const timelineText = timelineSelect.options[timelineSelect.selectedIndex].text;
         
         const invoiceData = {
             invoiceNumber: `INV-${this.referenceNumber}`,
             date: new Date().toLocaleDateString(),
             company: 'Hepeco Digital Systems',
-            client: document.getElementById('phoneNumber').value || 'Client',
+            client: document.getElementById('phoneNumber')?.value || 'Client',
             items: [
                 {
                     description: serviceText,
@@ -316,7 +341,10 @@ class PaymentManager {
     
     displayInvoice(data) {
         const modal = document.getElementById('qrModal');
+        if (!modal) return;
+        
         const modalBody = modal.querySelector('.modal-body');
+        if (!modalBody) return;
         
         modalBody.innerHTML = `
             <div class="invoice">
@@ -364,7 +392,7 @@ class PaymentManager {
                     <button class="btn-primary" onclick="window.print()">
                         <i class="fas fa-print"></i> Print Invoice
                     </button>
-                    <button class="btn-secondary" onclick="this.downloadInvoice('${JSON.stringify(data)}')">
+                    <button class="btn-secondary" onclick="this.downloadInvoice('${encodeURIComponent(JSON.stringify(data))}')">
                         <i class="fas fa-download"></i> Download PDF
                     </button>
                 </div>
@@ -372,6 +400,21 @@ class PaymentManager {
         `;
         
         modal.style.display = 'flex';
+        
+        // Close modal functionality
+        const closeBtn = modal.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+        
+        // Close when clicking outside
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
     }
     
     downloadInvoice(data) {
@@ -382,6 +425,8 @@ class PaymentManager {
     setupQuoteCalculator() {
         const serviceSelect = document.getElementById('serviceType');
         const timelineSelect = document.getElementById('timeline');
+        
+        if (!serviceSelect || !timelineSelect) return;
         
         const calculateQuote = () => {
             const service = serviceSelect.value;
@@ -405,11 +450,17 @@ class PaymentManager {
             this.currentAmount = total;
             
             // Update payment form amount
-            document.getElementById('amount').value = total.toLocaleString();
+            const amountInput = document.getElementById('amount');
+            if (amountInput) {
+                amountInput.value = total.toLocaleString();
+            }
             
             // Update dashboard
-            document.getElementById('dashboardAmount').textContent = `MK ${total.toLocaleString()}`;
-            document.getElementById('dashboardRef').textContent = this.referenceNumber;
+            const dashboardAmount = document.getElementById('dashboardAmount');
+            const dashboardRef = document.getElementById('dashboardRef');
+            
+            if (dashboardAmount) dashboardAmount.textContent = `MK ${total.toLocaleString()}`;
+            if (dashboardRef) dashboardRef.textContent = this.referenceNumber;
             
             this.logPaymentActivity('quote_calculated', { service, timeline, amount: total });
         };
@@ -418,66 +469,92 @@ class PaymentManager {
         timelineSelect.addEventListener('change', calculateQuote);
         
         // Proceed to payment button
-        document.getElementById('proceedPayment').addEventListener('click', () => {
-            if (this.currentAmount === 0) {
-                alert('Please select a service first.');
-                return;
-            }
-            
-            document.getElementById('quote').scrollIntoView({ behavior: 'smooth' });
-            this.showPaymentOptions();
-        });
+        const proceedPaymentBtn = document.getElementById('proceedPayment');
+        if (proceedPaymentBtn) {
+            proceedPaymentBtn.addEventListener('click', () => {
+                if (this.currentAmount === 0) {
+                    alert('Please select a service first.');
+                    return;
+                }
+                
+                const quoteSection = document.getElementById('quote');
+                if (quoteSection) {
+                    quoteSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                this.showPaymentOptions();
+            });
+        }
+        
+        // Initialize calculation
+        calculateQuote();
     }
     
     showPaymentOptions() {
         const paymentSection = document.querySelector('.payment-methods');
-        paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Highlight payment section
-        paymentSection.classList.add('highlight-section');
-        setTimeout(() => {
-            paymentSection.classList.remove('highlight-section');
-        }, 2000);
+        if (paymentSection) {
+            paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Highlight payment section
+            paymentSection.classList.add('highlight-section');
+            setTimeout(() => {
+                paymentSection.classList.remove('highlight-section');
+            }, 2000);
+        }
     }
     
     updateQuoteDisplay(serviceCost, timelineFee, total) {
-        document.getElementById('serviceCost').textContent = `MK ${serviceCost.toLocaleString()}`;
-        document.getElementById('timelineFee').textContent = `MK ${timelineFee.toLocaleString()}`;
-        document.getElementById('totalCost').textContent = `MK ${total.toLocaleString()}`;
+        const serviceCostEl = document.getElementById('serviceCost');
+        const timelineFeeEl = document.getElementById('timelineFee');
+        const totalCostEl = document.getElementById('totalCost');
+        
+        if (serviceCostEl) serviceCostEl.textContent = `MK ${serviceCost.toLocaleString()}`;
+        if (timelineFeeEl) timelineFeeEl.textContent = `MK ${timelineFee.toLocaleString()}`;
+        if (totalCostEl) totalCostEl.textContent = `MK ${total.toLocaleString()}`;
     }
     
     setupPaymentForm() {
         // Generate payment button
-        document.getElementById('generatePayment').addEventListener('click', () => {
-            const phone = document.getElementById('phoneNumber').value.trim();
-            if (!phone) {
-                alert('Please enter your phone number.');
-                return;
-            }
-            
-            // Validate phone format
-            if (!this.validatePhoneNumber(phone)) {
-                alert('Please enter a valid Malawi phone number (e.g., 0991268040)');
-                return;
-            }
-            
-            this.showQRCode();
-            this.logPaymentActivity('payment_initiated', { 
-                phone: this.maskPhoneNumber(phone),
-                amount: this.currentAmount,
-                method: this.selectedMethod 
+        const generatePaymentBtn = document.getElementById('generatePayment');
+        if (generatePaymentBtn) {
+            generatePaymentBtn.addEventListener('click', () => {
+                const phoneInput = document.getElementById('phoneNumber');
+                const phone = phoneInput?.value.trim();
+                
+                if (!phone) {
+                    alert('Please enter your phone number.');
+                    return;
+                }
+                
+                // Validate phone format
+                if (!this.validatePhoneNumber(phone)) {
+                    alert('Please enter a valid Malawi phone number (e.g., 0991268040)');
+                    return;
+                }
+                
+                this.showQRCode();
+                this.logPaymentActivity('payment_initiated', { 
+                    phone: this.maskPhoneNumber(phone),
+                    amount: this.currentAmount,
+                    method: this.selectedMethod 
+                });
             });
-        });
+        }
         
         // Verify payment button
-        document.getElementById('verifyPayment').addEventListener('click', () => {
-            this.verifyPayment();
-        });
+        const verifyPaymentBtn = document.getElementById('verifyPayment');
+        if (verifyPaymentBtn) {
+            verifyPaymentBtn.addEventListener('click', () => {
+                this.verifyPayment();
+            });
+        }
         
         // Add phone validation
-        document.getElementById('phoneNumber').addEventListener('input', (e) => {
-            this.validatePhoneInput(e.target);
-        });
+        const phoneInput = document.getElementById('phoneNumber');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', (e) => {
+                this.validatePhoneInput(e.target);
+            });
+        }
     }
     
     validatePhoneNumber(phone) {
@@ -531,19 +608,28 @@ class PaymentManager {
         
         // Show selected method instructions
         const method = this.selectedMethod;
-        document.getElementById(`${method}Instructions`).classList.remove('hidden');
+        const methodInstructions = document.getElementById(`${method}Instructions`);
+        if (methodInstructions) {
+            methodInstructions.classList.remove('hidden');
+        }
         
         // Update reference numbers
         const ref = this.referenceNumber;
-        document.getElementById('mpambaRef').textContent = ref;
-        document.getElementById('airtelRef').textContent = ref;
-        document.getElementById('bankRef').textContent = ref;
+        const mpambaRef = document.getElementById('mpambaRef');
+        const airtelRef = document.getElementById('airtelRef');
+        const bankRef = document.getElementById('bankRef');
+        
+        if (mpambaRef) mpambaRef.textContent = ref;
+        if (airtelRef) airtelRef.textContent = ref;
+        if (bankRef) bankRef.textContent = ref;
     }
     
     showQRCode() {
         const modal = document.getElementById('qrModal');
         const amount = this.currentAmount;
         const method = this.selectedMethod;
+        
+        if (!modal) return;
         
         // Generate QR code data with security features
         let qrData = '';
@@ -568,9 +654,13 @@ class PaymentManager {
         qrData += `|${Date.now()}|${this.generateSecurityHash()}`;
         
         // Display details in modal
-        document.getElementById('modalAmount').textContent = `MK ${amount.toLocaleString()}`;
-        document.getElementById('modalRef').textContent = this.referenceNumber;
-        document.getElementById('modalAccount').textContent = accountNumber;
+        const modalAmount = document.getElementById('modalAmount');
+        const modalRef = document.getElementById('modalRef');
+        const modalAccount = document.getElementById('modalAccount');
+        
+        if (modalAmount) modalAmount.textContent = `MK ${amount.toLocaleString()}`;
+        if (modalRef) modalRef.textContent = this.referenceNumber;
+        if (modalAccount) modalAccount.textContent = accountNumber;
         
         // Generate QR code
         this.generateQRCodeElement(qrData);
@@ -579,9 +669,12 @@ class PaymentManager {
         modal.style.display = 'flex';
         
         // Close modal
-        document.querySelector('.close-modal').onclick = () => {
-            modal.style.display = 'none';
-        };
+        const closeBtn = modal.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
         
         // Close when clicking outside
         modal.onclick = (e) => {
@@ -604,6 +697,7 @@ class PaymentManager {
     
     generateQRCodeElement(data) {
         const qrcodeDiv = document.getElementById('qrcode');
+        if (!qrcodeDiv) return;
         
         // Clear previous QR
         qrcodeDiv.innerHTML = '';
@@ -615,6 +709,7 @@ class PaymentManager {
         qrcodeDiv.appendChild(canvas);
         
         const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         
         // Draw QR code background
         ctx.fillStyle = '#ffffff';
@@ -652,9 +747,10 @@ class PaymentManager {
     
     async verifyPayment() {
         const statusDiv = document.getElementById('paymentStatus');
-        const phone = document.getElementById('phoneNumber').value.trim();
+        const phoneInput = document.getElementById('phoneNumber');
+        const phone = phoneInput?.value.trim();
         
-        if (!phone) {
+        if (!statusDiv || !phone) {
             alert('Please enter your phone number first.');
             return;
         }
@@ -691,8 +787,11 @@ class PaymentManager {
                 statusDiv.className = 'success';
                 
                 // Update dashboard
-                document.getElementById('dashboardPaymentStatus').textContent = 'Verified';
-                document.getElementById('dashboardPaymentStatus').className = 'status-badge verified';
+                const dashboardStatus = document.getElementById('dashboardPaymentStatus');
+                if (dashboardStatus) {
+                    dashboardStatus.textContent = 'Verified';
+                    dashboardStatus.className = 'status-badge verified';
+                }
                 
                 // Log successful payment
                 this.logPaymentActivity('payment_verified', { 
@@ -750,7 +849,7 @@ class PaymentManager {
                     <p><strong>Portal ID:</strong> CLIENT-${this.referenceNumber}</p>
                     <p><strong>Access Code:</strong> ${this.generateAccessCode()}</p>
                 </div>
-                <div class="portal-features">
+                <div class="portal-features-container">
                     <div class="feature">
                         <i class="fas fa-tasks"></i>
                         <span>Track Progress</span>
@@ -771,7 +870,9 @@ class PaymentManager {
         `;
         
         const paymentStatus = document.getElementById('paymentStatus');
-        paymentStatus.parentNode.insertBefore(portalDiv, paymentStatus.nextSibling);
+        if (paymentStatus && paymentStatus.parentNode) {
+            paymentStatus.parentNode.insertBefore(portalDiv, paymentStatus.nextSibling);
+        }
         
         // Log portal creation
         this.logPaymentActivity('portal_created', { reference: this.referenceNumber });
@@ -794,10 +895,18 @@ class QuickQuote {
     }
     
     init() {
-        document.getElementById('showQuote').addEventListener('click', () => {
-            document.getElementById('quote').scrollIntoView({ behavior: 'smooth' });
-            this.showQuoteTooltip();
-        });
+        // Show quote button
+        const showQuoteBtn = document.getElementById('showQuote');
+        if (showQuoteBtn) {
+            showQuoteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const quoteSection = document.getElementById('quote');
+                if (quoteSection) {
+                    quoteSection.scrollIntoView({ behavior: 'smooth' });
+                    this.showQuoteTooltip();
+                }
+            });
+        }
         
         // Initialize default quote
         this.updateDefaultQuote();
@@ -815,9 +924,15 @@ class QuickQuote {
         `;
         
         const quoteSection = document.getElementById('quote');
-        quoteSection.appendChild(tooltip);
-        
-        setTimeout(() => tooltip.remove(), 5000);
+        if (quoteSection) {
+            quoteSection.appendChild(tooltip);
+            
+            setTimeout(() => {
+                if (tooltip.parentNode) {
+                    tooltip.remove();
+                }
+            }, 5000);
+        }
     }
     
     setupQuoteSaving() {
@@ -828,12 +943,20 @@ class QuickQuote {
         
         const quoteBox = document.querySelector('.quote-box');
         const proceedBtn = document.getElementById('proceedPayment');
-        quoteBox.insertBefore(saveQuoteBtn, proceedBtn);
+        if (quoteBox && proceedBtn) {
+            quoteBox.insertBefore(saveQuoteBtn, proceedBtn);
+        }
     }
     
     saveCurrentQuote() {
         const serviceSelect = document.getElementById('serviceType');
         const timelineSelect = document.getElementById('timeline');
+        
+        if (!serviceSelect || !timelineSelect) {
+            alert('Please select a service first.');
+            return;
+        }
+        
         const service = serviceSelect.value;
         const timeline = timelineSelect.options[timelineSelect.selectedIndex].text;
         
@@ -845,7 +968,7 @@ class QuickQuote {
         const quote = {
             service: serviceSelect.options[serviceSelect.selectedIndex].text,
             timeline,
-            amount: document.getElementById('totalCost').textContent,
+            amount: document.getElementById('totalCost')?.textContent || 'MK 0',
             date: new Date().toLocaleString(),
             id: 'QUOTE-' + Date.now().toString().slice(-8)
         };
@@ -870,116 +993,199 @@ class QuickQuote {
         `;
         
         document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
     }
     
     updateDefaultQuote() {
         // Set default values
-        document.getElementById('serviceType').selectedIndex = 1;
-        document.getElementById('timeline').selectedIndex = 0;
-        document.getElementById('serviceType').dispatchEvent(new Event('change'));
+        const serviceSelect = document.getElementById('serviceType');
+        const timelineSelect = document.getElementById('timeline');
+        
+        if (serviceSelect && timelineSelect) {
+            serviceSelect.selectedIndex = 1;
+            timelineSelect.selectedIndex = 0;
+            
+            // Trigger change event
+            if (typeof Event === 'function') {
+                serviceSelect.dispatchEvent(new Event('change'));
+            }
+        }
     }
 }
 
-// Main Application
+// Main Application with fixed menu functionality
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize managers
     new WhatsAppManager();
     new PaymentManager();
     new QuickQuote();
     
-    // Enhanced mobile menu toggle
+    // FIXED: Enhanced mobile menu toggle with proper event handling
     const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
     const navbar = document.querySelector('.navbar .container');
     
-    menuToggle.addEventListener('click', () => {
-        navbar.classList.toggle('menu-open');
-        menuToggle.innerHTML = navbar.classList.contains('menu-open') 
-            ? '<i class="fas fa-times"></i>' 
-            : '<i class="fas fa-bars"></i>';
+    // Ensure elements exist
+    if (menuToggle && navMenu && navbar) {
+        // Toggle menu when hamburger is clicked
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            navMenu.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+            navbar.classList.toggle('menu-open');
+            
+            // Update aria-expanded for accessibility
+            const isExpanded = navMenu.classList.contains('active');
+            menuToggle.setAttribute('aria-expanded', isExpanded);
+            
+            // Toggle body scroll lock
+            if (isExpanded) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
         
-        // Add animation class
-        navbar.classList.add('menu-animating');
-        setTimeout(() => {
-            navbar.classList.remove('menu-animating');
-        }, 300);
-    });
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navbar.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+                navbar.classList.remove('menu-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close menu when clicking a nav link (for single page navigation)
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+                navbar.classList.remove('menu-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+                navbar.classList.remove('menu-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Prevent clicks inside menu from closing it
+        navMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
     
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!navbar.contains(e.target) && !menuToggle.contains(e.target)) {
-            navbar.classList.remove('menu-open');
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-    });
-    
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        // Ctrl+Q for quick quote
-        if (e.ctrlKey && e.key === 'q') {
+    // FIXED: Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            // Skip if it's just "#" or empty
+            if (href === '#' || href === '') return;
+            
             e.preventDefault();
-            document.getElementById('showQuote').click();
-        }
-        // Ctrl+P for payment
-        if (e.ctrlKey && e.key === 'p') {
-            e.preventDefault();
-            document.getElementById('proceedPayment').click();
-        }
-        // Ctrl+W for WhatsApp
-        if (e.ctrlKey && e.key === 'w') {
-            e.preventDefault();
-            document.getElementById('whatsappChat').click();
-        }
+            
+            const targetElement = document.querySelector(href);
+            if (targetElement) {
+                // Close mobile menu if open
+                if (navMenu && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                    navbar.classList.remove('menu-open');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                }
+                
+                // Smooth scroll to target
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
     
     // Send email button with security
-    document.getElementById('sendEmail').addEventListener('click', () => {
-        const name = document.getElementById('quickName').value.trim();
-        const phone = document.getElementById('quickPhone').value.trim();
-        const service = document.getElementById('quickService').value;
-        const message = document.getElementById('quickMessage').value.trim();
-        
-        // Validate inputs
-        if (!name || !phone) {
-            alert('Please enter your name and phone number.');
-            return;
-        }
-        
-        // Sanitize inputs
-        const sanitizedName = SecurityUtils.sanitizeInput(name);
-        const sanitizedPhone = SecurityUtils.sanitizeInput(phone);
-        const sanitizedMessage = SecurityUtils.sanitizeInput(message);
-        
-        let subject = 'Secure Inquiry - Hepeco Digital';
-        let body = `Security Level: Encrypted\n`;
-        body += `Timestamp: ${new Date().toISOString()}\n\n`;
-        body += `Name: ${sanitizedName}\n`;
-        body += `Phone: ${sanitizedPhone}\n`;
-        
-        if (service) {
-            const serviceText = document.getElementById('quickService').options[document.getElementById('quickService').selectedIndex].text;
-            body += `Service: ${serviceText}\n`;
-        }
-        
-        if (sanitizedMessage) {
-            body += `\nMessage:\n${sanitizedMessage}`;
-        }
-        
-        // Add security footer
-        body += `\n\n---\nThis message was securely sent from Hepeco Digital website\nRef: WEB-${Date.now().toString().slice(-6)}`;
-        
-        const mailtoLink = `mailto:info@hepecodigital.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailtoLink;
-    });
+    const sendEmailBtn = document.getElementById('sendEmail');
+    if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', () => {
+            const name = document.getElementById('quickName')?.value.trim();
+            const phone = document.getElementById('quickPhone')?.value.trim();
+            const service = document.getElementById('quickService')?.value;
+            const message = document.getElementById('quickMessage')?.value.trim();
+            
+            // Validate inputs
+            if (!name || !phone) {
+                alert('Please enter your name and phone number.');
+                return;
+            }
+            
+            // Sanitize inputs
+            const sanitizedName = window.SecurityUtils ? 
+                window.SecurityUtils.sanitizeInput(name) : 
+                name.replace(/[<>]/g, '');
+                
+            const sanitizedPhone = window.SecurityUtils ? 
+                window.SecurityUtils.sanitizeInput(phone) : 
+                phone.replace(/[<>]/g, '');
+                
+            const sanitizedMessage = window.SecurityUtils ? 
+                window.SecurityUtils.sanitizeInput(message) : 
+                message.replace(/[<>]/g, '');
+            
+            let subject = 'Secure Inquiry - Hepeco Digital';
+            let body = `Security Level: Encrypted\n`;
+            body += `Timestamp: ${new Date().toISOString()}\n\n`;
+            body += `Name: ${sanitizedName}\n`;
+            body += `Phone: ${sanitizedPhone}\n`;
+            
+            if (service) {
+                const serviceSelect = document.getElementById('quickService');
+                const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+                body += `Service: ${serviceText}\n`;
+            }
+            
+            if (sanitizedMessage) {
+                body += `\nMessage:\n${sanitizedMessage}`;
+            }
+            
+            // Add security footer
+            body += `\n\n---\nThis message was securely sent from Hepeco Digital website\nRef: WEB-${Date.now().toString().slice(-6)}`;
+            
+            const mailtoLink = `mailto:info@hepecodigital.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+        });
+    }
     
     // Update reference number every hour with security
     setInterval(() => {
-        const paymentManager = new PaymentManager();
-        paymentManager.referenceNumber = paymentManager.generateSecureReference();
-        paymentManager.updatePaymentInstructions();
-        
-        // Log reference rotation
-        console.log('Payment reference rotated for security');
+        try {
+            const paymentManager = new PaymentManager();
+            paymentManager.referenceNumber = paymentManager.generateSecureReference();
+            paymentManager.updatePaymentInstructions();
+            
+            // Log reference rotation
+            console.log('Payment reference rotated for security');
+        } catch (error) {
+            console.error('Error rotating payment reference:', error);
+        }
     }, 3600000);
     
     // Add security warning for suspicious activities
@@ -1027,10 +1233,33 @@ function initializeSecurityFeatures() {
                 <span>Unusual activity detected. Please proceed normally.</span>
             `;
             document.body.appendChild(warning);
-            setTimeout(() => warning.remove(), 5000);
+            setTimeout(() => {
+                if (warning.parentNode) {
+                    warning.remove();
+                }
+            }, 5000);
         }
     };
     
     // Track clicks
     document.addEventListener('click', () => activityMonitor.incrementClick());
-            }
+}
+
+// Make PaymentManager accessible for interval updates
+window.PaymentManager = PaymentManager;
+
+// Helper function for invoice download (needs to be on window)
+window.downloadInvoice = function(data) {
+    try {
+        const invoiceData = JSON.parse(decodeURIComponent(data));
+        alert(`Downloading invoice ${invoiceData.invoiceNumber}...\n\nIn production, this would generate a PDF.`);
+    } catch (error) {
+        console.error('Error downloading invoice:', error);
+        alert('Error preparing invoice for download.');
+    }
+};
+
+// Helper function for client portal access
+PaymentManager.prototype.accessClientPortal = function() {
+    alert('Client portal would open here. In production, this would connect to your project management system.');
+};
