@@ -1,5 +1,5 @@
 /**
- * Hepeco Digital - Professional Website Solution
+ * Phirinex Technologies - Professional Website Solution
  * Enhanced with security, payment processing, and WhatsApp integration
  * Mobile Menu FIXED Version
  */
@@ -8,7 +8,7 @@
 class WhatsAppManager {
     constructor() {
         this.verifiedNumber = '2650991268040';
-        this.companyName = 'Hepeco Digital';
+        this.companyName = 'Phirinex Technologies';
         console.log('WhatsAppManager initialized');
         this.setupEssentialButtons();
     }
@@ -22,7 +22,7 @@ class WhatsAppManager {
             whatsappChatBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 console.log('WhatsApp chat button clicked');
-                this.openSecureChat("Hello Hepeco Digital! I'm interested in your services.");
+                this.openSecureChat("Hello Phirinex Technologies! I'm interested in your services.");
             });
         }
         
@@ -428,7 +428,7 @@ class PaymentManager {
         const invoiceData = {
             invoiceNumber: `INV-${this.referenceNumber}`,
             date: new Date().toLocaleDateString(),
-            company: 'Hepeco Digital Systems',
+            company: 'Phirinex Technologies',
             client: document.getElementById('phoneNumber')?.value || 'Client',
             items: [
                 {
@@ -789,7 +789,7 @@ class PaymentManager {
                 break;
             case 'bank':
                 accountNumber = '1001268040';
-                qrData = `bank:National Bank\nAccount: Hepeco Digital\nAcc: ${accountNumber}\nAmount: ${amount}\nRef: ${this.referenceNumber}`;
+                qrData = `bank:National Bank\nAccount: Phirinex Technologies\nAcc: ${accountNumber}\nAmount: ${amount}\nRef: ${this.referenceNumber}`;
                 break;
         }
         
@@ -1216,7 +1216,7 @@ class QuickQuote {
 
 // Main Application Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded - Initializing Hepeco Digital website...');
+    console.log('DOM Content Loaded - Initializing Phirinex Technologies website...');
     
     try {
         // Initialize optimized managers
@@ -1300,7 +1300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing security features...');
         initializeSecurityFeatures();
         
-        console.log('✅ Hepeco Digital website initialized successfully!');
+        console.log('✅ Phirinex Technologies website initialized successfully!');
         
     } catch (error) {
         console.error('❌ Error initializing website:', error);
@@ -1371,7 +1371,7 @@ function setupEmailButton() {
                 return;
             }
             
-            let subject = 'Website Inquiry - Hepeco Digital';
+            let subject = 'Website Inquiry - Phirinex Technologies';
             let body = `Name: ${name}\n`;
             body += `Phone: ${phone}\n`;
             
@@ -1385,7 +1385,7 @@ function setupEmailButton() {
                 body += `\nMessage:\n${message}`;
             }
             
-            body += `\n\nSent from Hepeco Digital website`;
+            body += `\n\nSent from Phirinex Technologies website`;
             
             const mailtoLink = `mailto:info@hepecodigital.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoLink;
