@@ -64,7 +64,7 @@ const VERIFIED_NUMBER = process.env.VERIFIED_NUMBER || '2650991268040';
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'healthy',
-        service: 'Hepeco Digital API',
+        service: 'Phirinex Technologies API',
         whatsapp: whatsappClient ? 'connected' : 'disabled',
         verified_number: VERIFIED_NUMBER,
         security: 'enhanced',
@@ -246,7 +246,7 @@ function getPaymentInstructions(method, reference, accountNumber) {
         ],
         bank: [
             'Bank: National Bank of Malawi',
-            'Account Name: Hepeco Digital Systems',
+            'Account Name: Phirinex Technologies',
             `Account Number: ${accountNumber}`,
             'Branch: Lilongwe City Centre',
             `Reference: ${reference}`,
