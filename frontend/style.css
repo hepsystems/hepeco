@@ -12,29 +12,32 @@
 }
 
 :root {
-    /* Primary Colors */
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-light: #60a5fa;
-    --primary-transparent: rgba(37, 99, 235, 0.1);
+    /* Primary Colors - electric indigo/cyan gradient duo */
+    --primary: #6366f1;
+    --primary-dark: #4338ca;
+    --primary-light: #a5b4fc;
+    --primary-transparent: rgba(99, 102, 241, 0.15);
     
     /* Secondary Colors */
-    --secondary: #7c3aed;
-    --secondary-dark: #6d28d9;
-    --secondary-light: #a78bfa;
+    --secondary: #06b6d4;
+    --secondary-dark: #0891b2;
+    --secondary-light: #67e8f9;
     
     /* Accent Colors */
     --accent: #10b981;
     --accent-dark: #059669;
     --accent-light: #34d399;
     
-    /* Neutral Colors */
-    --dark: #1f2937;
-    --dark-light: #374151;
-    --light: #f9fafb;
-    --light-gray: #e5e7eb;
-    --gray: #6b7280;
+    /* Neutral Colors - inverted for super-black theme */
+    --dark: #f5f5f7;
+    --dark-light: #d1d5db;
+    --light: #0a0a0c;
+    --light-gray: #232327;
+    --gray: #9ca3af;
     --white: #ffffff;
+    --black: #000000;
+    --card-bg: #101014;
+    --card-bg-alt: #17171c;
     
     /* Brand Colors */
     --whatsapp: #25d366;
@@ -50,12 +53,12 @@
     --info: #3b82f6;
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 3px 6px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.55), 0 3px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 20px 40px -10px rgba(99, 102, 241, 0.2);
+    --shadow-2xl: 0 25px 50px -12px rgba(6, 182, 212, 0.2);
     
     /* Border Radius */
     --radius-sm: 4px;
@@ -100,7 +103,7 @@ body {
     font-family: var(--font-sans);
     line-height: 1.6;
     color: var(--dark);
-    background: linear-gradient(135deg, #f8fafc 0%, var(--white) 100%);
+    background: linear-gradient(160deg, #000000 0%, #0a0a0c 100%);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -272,7 +275,7 @@ p {
 
 /* Security Alerts & Notices */
 .security-alert {
-    background: #ffebee;
+    background: rgba(239, 68, 68, 0.12);
     border-left: 4px solid var(--error);
     padding: 12px 16px;
     margin: 10px 0;
@@ -285,7 +288,7 @@ p {
 }
 
 .security-notice {
-    background: #e3f2fd;
+    background: rgba(59, 130, 246, 0.12);
     border-left: 4px solid var(--primary);
     padding: 12px 16px;
     margin: 10px 0;
@@ -297,7 +300,7 @@ p {
 }
 
 .security-warning {
-    background: #fff3cd;
+    background: rgba(245, 158, 11, 0.12);
     border: 1px solid #ffecb5;
     color: #856404;
     padding: 16px;
@@ -330,7 +333,7 @@ p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: var(--white);
+    background: var(--card-bg);
     border: 2px solid var(--error);
     border-radius: var(--radius-md);
     padding: 24px;
@@ -385,7 +388,7 @@ p {
 
 /* Navigation */
 .navbar {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 1rem 0;
     box-shadow: var(--shadow);
     position: sticky;
@@ -393,7 +396,12 @@ p {
     z-index: 100;
     width: 100%;
     backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.85);
+    border-bottom: 1px solid transparent;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                       linear-gradient(90deg, var(--primary), var(--secondary));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .navbar .container {
@@ -556,7 +564,7 @@ p {
     display: block;
     width: 25px;
     height: 3px;
-    background: var(--dark);
+    background: var(--black);
     margin: 3px 0;
     transition: var(--transition);
     border-radius: 2px;
@@ -591,7 +599,7 @@ p {
         left: 0;
         width: 100%;
         height: 0;
-        background: var(--white);
+        background: var(--card-bg);
         flex-direction: column;
         padding: 0;
         transition: height 0.3s ease, opacity 0.3s ease;
@@ -749,7 +757,7 @@ p {
 }
 
 .btn-secondary {
-    background: var(--white);
+    background: var(--card-bg);
     color: var(--primary);
     border: 2px solid var(--primary);
 }
@@ -775,7 +783,7 @@ p {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--white);
+    background: var(--card-bg);
     padding: 12px 16px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -812,7 +820,7 @@ p {
 }
 
 .mockup {
-    background: var(--white);
+    background: var(--card-bg);
     border-radius: var(--radius-md);
     padding: 20px;
     box-shadow: var(--shadow-lg);
@@ -880,7 +888,7 @@ p {
 .stat {
     text-align: center;
     padding: 15px 10px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    background: linear-gradient(135deg, #0d0d12, #111827);
     border-radius: var(--radius);
     transition: var(--transition);
 }
@@ -905,7 +913,7 @@ p {
 /* Services */
 .services {
     padding: 80px 0;
-    background: var(--white);
+    background: var(--card-bg);
     width: 100%;
 }
 
@@ -1014,7 +1022,7 @@ p {
 /* Expertise Section */
 .expertise {
     padding: 80px 0;
-    background: #f8fafc;
+    background: var(--card-bg);
     width: 100%;
 }
 
@@ -1027,7 +1035,7 @@ p {
 }
 
 .expertise-card {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 30px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow);
@@ -1090,7 +1098,7 @@ p {
 /* Process Section */
 .process {
     padding: 80px 0;
-    background: var(--white);
+    background: var(--card-bg);
     width: 100%;
     position: relative;
 }
@@ -1125,7 +1133,7 @@ p {
     text-align: center;
     position: relative;
     z-index: 2;
-    background: var(--white);
+    background: var(--card-bg);
     padding: 30px 20px;
     border-radius: var(--radius-md);
     border: 2px solid var(--light-gray);
@@ -1171,7 +1179,7 @@ p {
 /* Payment Section */
 .payment-section {
     padding: 80px 0;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #0d0d12 0%, #111827 100%);
     width: 100%;
 }
 
@@ -1185,7 +1193,7 @@ p {
 
 /* Enhanced Quote Box */
 .quote-box {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 30px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
@@ -1262,7 +1270,7 @@ p {
     font-family: var(--font-sans);
     font-size: 1rem;
     transition: all var(--transition);
-    background: var(--white);
+    background: var(--card-bg);
 }
 
 .form-group select:focus, .form-group input:focus {
@@ -1345,7 +1353,7 @@ input.invalid {
 
 /* Payment Methods */
 .payment-methods {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 30px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
@@ -1512,12 +1520,12 @@ input.invalid {
 }
 
 .status-badge.pending {
-    background: #fff3cd;
+    background: rgba(245, 158, 11, 0.12);
     color: #856404;
 }
 
 .status-badge.verified {
-    background: #d4edda;
+    background: rgba(16, 185, 129, 0.12);
     color: #155724;
 }
 
@@ -1697,7 +1705,7 @@ input.invalid {
 /* Trust Section */
 .trust {
     padding: 80px 0;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #0d0d12 0%, #111827 100%);
     width: 100%;
 }
 
@@ -1712,7 +1720,7 @@ input.invalid {
 .trust-item {
     text-align: center;
     padding: 30px 20px;
-    background: var(--white);
+    background: var(--card-bg);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow);
     transition: all var(--transition);
@@ -1804,7 +1812,7 @@ input.invalid {
 }
 
 .portal-access {
-    background: var(--white);
+    background: var(--card-bg);
     color: var(--dark);
     padding: 30px;
     border-radius: var(--radius-md);
@@ -1847,7 +1855,7 @@ input.invalid {
 
 /* Client Portal Display */
 .client-portal {
-    background: var(--white);
+    background: var(--card-bg);
     border-radius: var(--radius-md);
     border: 2px solid var(--primary);
     margin: 20px 0;
@@ -1906,7 +1914,7 @@ input.invalid {
 /* Contact Section */
 .contact {
     padding: 80px 0;
-    background: var(--white);
+    background: var(--card-bg);
     width: 100%;
 }
 
@@ -2000,7 +2008,7 @@ input.invalid {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: var(--white);
+    background: var(--card-bg);
     color: var(--dark);
     padding: 10px 20px;
     border-radius: var(--radius);
@@ -2172,7 +2180,7 @@ input.invalid {
 .quote-notification,
 .payment-notification {
     position: fixed;
-    background: var(--white);
+    background: var(--card-bg);
     border-left: 4px solid var(--success);
     padding: 15px 20px;
     border-radius: var(--radius);
@@ -2263,7 +2271,7 @@ input.invalid {
 
 /* Footer */
 .footer {
-    background: var(--dark);
+    background: var(--black);
     color: var(--white);
     padding: 60px 0 30px;
     width: 100%;
@@ -2505,7 +2513,7 @@ input.invalid {
 }
 
 .modal-content {
-    background: var(--white);
+    background: var(--card-bg);
     border-radius: var(--radius-md);
     width: 100%;
     max-width: 500px;
@@ -2567,7 +2575,7 @@ input.invalid {
 #qrcode {
     margin: 0 auto 2rem;
     padding: 20px;
-    background: var(--white);
+    background: var(--card-bg);
     border-radius: var(--radius);
     display: inline-block;
     border: 1px solid var(--light-gray);
@@ -2622,7 +2630,7 @@ input.invalid {
 }
 
 .timeout-content {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 30px;
     border-radius: var(--radius-md);
     text-align: center;
@@ -2840,7 +2848,7 @@ html, body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #0d0d0f;
 }
 
 ::-webkit-scrollbar-thumb {
